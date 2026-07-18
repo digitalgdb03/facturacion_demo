@@ -6,17 +6,17 @@
 <title>Ferremateriales Ruiz 2020 — Facturación e Inventario</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root{
   --navy-900:#0b1d33; --navy-800:#102742; --navy-700:#16304f; --navy-600:#1e3a5f;
   --navy-50:#eef3f8; --navy-100:#dbe6f1;
-  --accent:#f59e0b; --accent-600:#d97706; --accent-400:#fbbf24;
+  --accent:#00b7c3; --accent-600:#00929c; --accent-400:#4dd6e0;
   --slate-50:#f8fafc; --slate-100:#f1f5f9; --slate-200:#e2e8f0; --slate-300:#cbd5e1;
   --slate-400:#94a3b8; --slate-500:#64748b; --slate-600:#475569; --slate-700:#334155; --slate-800:#1e293b;
-  --red:#dc2626; --red-bg:#fee2e2; --green:#059669; --green-bg:#d1fae5; --amber-bg:#fef3c7; --amber-tx:#b45309;
+  --red:#dc2626; --red-bg:#fee2e2; --green:#059669; --green-bg:#d1fae5; --info-bg:#e0f7fa; --info-tx:#00838f;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--slate-100);color:var(--slate-800);font-size:14px;line-height:1.5}
@@ -33,17 +33,23 @@ input,select{font-family:inherit;font-size:14px}
 .input:focus,.field input:focus,.field select:focus{outline:none;border-color:var(--navy-600);box-shadow:0 0 0 3px rgba(30,58,95,.15)}
 .field{display:block}
 .field>span{display:block;font-size:12px;font-weight:600;color:var(--slate-500);margin-bottom:5px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:14px;font-weight:600;transition:background .15s,opacity .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:14px;font-weight:600;transition:background .15s,opacity .15s;text-decoration:none}
 .btn-primary{background:var(--navy-700);color:#fff}.btn-primary:hover{background:var(--navy-800)}
-.btn-accent{background:var(--accent);color:var(--navy-900)}.btn-accent:hover{background:var(--accent-600)}
+.btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:var(--accent-600)}
 .btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#b91c1c}
 .btn-ghost{color:var(--slate-600)}.btn-ghost:hover{background:var(--slate-100)}
 .link{color:var(--navy-700);font-size:12px;font-weight:600}.link:hover{text-decoration:underline}
 .link-red{color:var(--red);font-size:12px;font-weight:600}.link-red:hover{text-decoration:underline}
-.iconbtn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;color:var(--slate-500);transition:background .15s,color .15s;vertical-align:middle}
-.iconbtn:hover{background:var(--slate-100);color:var(--navy-700)}
-.iconbtn.danger:hover{background:var(--red-bg);color:var(--red)}
-.iconbtn svg{width:17px;height:17px}
+.iconbtn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;color:var(--slate-500);background:var(--slate-100);font-size:16px;transition:background .15s,color .15s,opacity .15s;vertical-align:middle;text-decoration:none;border:none}
+.iconbtn:hover{opacity:.75}
+.iconbtn.edit{background:var(--navy-100);color:var(--navy-700)}
+.iconbtn.view{background:var(--info-bg);color:var(--info-tx)}
+.iconbtn.danger{background:var(--red-bg);color:var(--red)}
+.iconbtn svg{width:19px;height:19px}
+.cat-action{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;color:var(--slate-400);cursor:pointer}
+.cat-action svg{width:12px;height:12px}
+.cat-action:hover{background:var(--slate-100);color:var(--navy-700)}
+.cat-action.danger:hover{background:var(--red-bg);color:var(--red)}
 .btn .ic,.btn .ic svg{display:inline-flex;width:18px;height:18px}
 
 /* Cards & tables */
@@ -64,8 +70,10 @@ tbody tr:hover{background:rgba(248,250,252,.7)}
 .badge.slate{background:var(--slate-100);color:var(--slate-600)}
 .badge.green{background:var(--green-bg);color:var(--green)}
 .badge.red{background:var(--red-bg);color:var(--red)}
-.badge.amber{background:var(--amber-bg);color:var(--amber-tx)}
+.badge.info{background:var(--info-bg);color:var(--info-tx)}
 .badge.navy{background:var(--navy-100);color:var(--navy-700)}
+.badge.purple{background:#ede9fe;color:#6d28d9}
+.badge.amber{background:#fef3c7;color:#92400e}
 
 /* Money */
 .money{text-align:right}
@@ -76,24 +84,39 @@ tbody tr:hover{background:rgba(248,250,252,.7)}
 .layout{display:flex;min-height:100vh}
 .sidebar{width:256px;background:var(--navy-900);color:#cbd9ea;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;z-index:40;transition:transform .2s}
 .brand{padding:18px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.1)}
-.logo{width:40px;height:40px;border-radius:11px;background:var(--accent);color:var(--navy-900);font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.brand .t1{color:#fff;font-weight:800;line-height:1.1}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg, var(--accent-400) 0%, var(--accent) 55%, var(--accent-600) 100%);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(0,183,195,.45)}
+.logo svg{width:21px;height:21px}
+.brand-text{min-width:0}
+.brand .t1{color:#fff;font-weight:800;line-height:1.3;font-size:14px;white-space:normal;word-break:break-word}
 .brand .t2{font-size:11px;color:rgba(203,217,234,.6)}
 .nav{flex:1;padding:14px 12px;overflow-y:auto}
 .nav button{width:100%;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;font-size:14px;font-weight:500;color:rgba(203,217,234,.75);text-align:left;margin-bottom:3px}
 .nav button:hover{background:rgba(255,255,255,.06);color:#fff}
-.nav button.active{background:rgba(255,255,255,.12);color:#fff}
-.nav .ico{width:20px;text-align:center}
+.nav button.active{background:rgba(0,183,195,.12);color:#fff;box-shadow:inset 3px 0 0 var(--accent)}
+.nav .ico{width:20px;height:20px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center}
+.nav .ico svg{width:19px;height:19px}
+.sidebar .foot .ico{width:20px;height:20px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center}
+.sidebar .foot .ico svg{width:19px;height:19px}
 .sidebar .foot{padding:12px;border-top:1px solid rgba(255,255,255,.1)}
 .sidebar .foot button{width:100%;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:rgba(203,217,234,.75);font-size:14px}
 .sidebar .foot button:hover{background:rgba(255,255,255,.06);color:#fff}
 .main{flex:1;margin-left:256px;display:flex;flex-direction:column;min-width:0}
-.topbar{background:#fff;border-bottom:1px solid var(--slate-200);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:20}
-.topbar h1{font-size:16px;font-weight:700;color:var(--slate-800)}
-.rate{display:flex;align-items:center;gap:8px;background:var(--navy-50);border:1px solid var(--navy-100);border-radius:8px;padding:6px 12px}
-.rate .lbl{font-size:11px;font-weight:700;color:var(--navy-700)}
-.rate .val{font-size:14px;font-weight:700;color:var(--navy-800)}
-.avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-700);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.topbar{background:#fff;border-bottom:1px solid var(--slate-200);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:20}
+.topbar h1{font-family:'Bebas Neue',system-ui,sans-serif;font-size:30px;font-weight:400;color:var(--navy-900);line-height:1;letter-spacing:1px;text-transform:uppercase}
+.page-sub{font-size:13px;font-weight:500;color:var(--slate-400);margin-top:2px}
+.rate{position:relative;display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:148px;border-radius:10px;padding:7px 14px;background:#0e2340 url('static/images/bdv.png') center/cover;box-shadow:0 6px 16px -4px rgba(11,29,51,.5)}
+.rate-row{display:flex;align-items:center;gap:6px}
+.rate-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(5,150,105,.3)}
+.rate-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(203,217,234,.8)}
+.rate-val{font-size:19px;font-weight:800;color:var(--accent-400);line-height:1}
+.rate-sub{font-size:11px;font-weight:600;color:rgba(203,217,234,.6);margin-left:6px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-700);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;text-decoration:none;border:none;cursor:pointer}
+.user-menu{position:relative}
+.user-menu-dropdown{display:none;position:absolute;right:0;top:calc(100% + 8px);z-index:60;background:#fff;border:1px solid var(--slate-200);border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.12);min-width:200px;padding:8px;overflow:hidden}
+.user-menu.open .user-menu-dropdown{display:block}
+.user-menu-name{padding:8px 10px;font-size:12px;font-weight:700;color:var(--slate-400);text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid var(--slate-100);margin-bottom:4px}
+.user-menu-dropdown a,.user-menu-dropdown button{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:8px;font-size:14px;color:var(--slate-700);text-decoration:none;background:none;border:none;cursor:pointer}
+.user-menu-dropdown a:hover,.user-menu-dropdown button:hover{background:var(--slate-100)}
 .content{flex:1;padding:32px;overflow-x:hidden}
 .hamb{display:none;font-size:22px;color:var(--slate-500)}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:30}
@@ -109,7 +132,7 @@ tbody tr:hover{background:rgba(248,250,252,.7)}
 
 /* Stat card */
 .stat{background:#fff;border:1px solid var(--slate-200);border-left:4px solid var(--navy-700);border-radius:12px;padding:18px}
-.stat.green{border-left-color:var(--green)}.stat.red{border-left-color:var(--red)}.stat.amber{border-left-color:var(--accent)}
+.stat.green{border-left-color:var(--green)}.stat.red{border-left-color:var(--red)}.stat.info{border-left-color:var(--accent)}
 .stat .l{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--slate-400)}
 .stat .v{font-size:26px;font-weight:800;color:var(--slate-800);margin-top:4px}
 .stat .s{font-size:12px;color:var(--slate-400);margin-top:2px}
@@ -128,15 +151,18 @@ tbody tr:hover{background:rgba(248,250,252,.7)}
 .bar-fill{height:8px;border-radius:6px}
 
 /* Login */
-.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--navy-900);padding:16px}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, var(--navy-900) 0%, var(--navy-700) 50%, var(--accent) 100%);padding:16px}
 .login-box{width:100%;max-width:400px}
 .login-head{text-align:center;margin-bottom:28px}
-.login-head .logo{width:64px;height:64px;border-radius:16px;font-size:30px;margin:0 auto;box-shadow:0 10px 25px rgba(0,0,0,.3)}
+.login-head .logo{width:64px;height:64px;border-radius:18px;margin:0 auto;box-shadow:0 10px 25px rgba(0,0,0,.35)}
+.login-head .logo svg{width:32px;height:32px}
 .login-head h1{color:#fff;font-size:24px;font-weight:800;margin-top:14px}
 .login-head p{color:rgba(203,217,234,.6);font-size:13px}
 .login-card{background:#fff;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.25);padding:28px}
 .login-card h2{font-weight:700;color:var(--slate-800)}
 .login-card .hint{font-size:12px;color:var(--slate-400);margin:2px 0 18px}
+.login-demo-users{font-size:12px;color:rgba(203,217,234,.65);text-align:center;margin-top:18px;line-height:1.6}
+.login-demo-users b{color:rgba(255,255,255,.85)}
 .err{font-size:12px;color:var(--red);background:var(--red-bg);border-radius:8px;padding:8px 12px;margin-top:4px}
 
 /* Modal */
@@ -147,6 +173,12 @@ tbody tr:hover{background:rgba(248,250,252,.7)}
 .modal-x{font-size:22px;color:var(--slate-400);line-height:1}
 .modal-b{padding:24px}
 .modal-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}
+
+/* Tarjeta de contacto (Digital Gdb) */
+.vendor-contact-row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-radius:8px;color:var(--slate-700);text-decoration:none;font-weight:600;font-size:14px}
+.vendor-contact-row:hover{background:var(--slate-50);color:var(--navy-700)}
+.vendor-contact-ico{width:36px;height:36px;border-radius:8px;background:var(--info-bg);color:var(--info-tx);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vendor-contact-ico svg{width:18px;height:18px}
 
 /* Facturación */
 .results{position:absolute;left:16px;right:16px;margin-top:4px;background:#fff;border:1px solid var(--slate-200);border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,.12);z-index:10;max-height:300px;overflow-y:auto}
@@ -162,6 +194,8 @@ tbody tr:hover{background:rgba(248,250,252,.7)}
 
 .empty{padding:40px 16px;text-align:center;color:var(--slate-400);font-size:14px}
 .flash{background:var(--green-bg);border:1px solid #a7f3d0;color:var(--green);font-size:14px;font-weight:600;border-radius:8px;padding:12px 16px}
+.flash.error{background:var(--red-bg);border-color:#fecaca;color:var(--red)}
+.flash.info{background:var(--info-bg);border-color:#bfdbfe;color:var(--info-tx)}
 
 /* Toasts */
 .toast-wrap{position:fixed;top:20px;right:20px;z-index:80;display:flex;flex-direction:column;gap:10px;max-width:340px}
@@ -172,7 +206,6 @@ tbody tr:hover{background:rgba(248,250,252,.7)}
 
 /* Confirm modal */
 .confirm-modal{background:#fff;border-radius:16px;box-shadow:0 25px 50px rgba(0,0,0,.3);width:100%;max-width:400px;padding:24px}
-.confirm-modal .ic-warn{width:44px;height:44px;border-radius:50%;background:var(--red-bg);color:var(--red);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
 .confirm-modal h3{font-size:16px;font-weight:700;color:var(--slate-800);margin-bottom:6px}
 .confirm-modal p{font-size:13px;color:var(--slate-500);line-height:1.5}
 .confirm-modal .foot{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
@@ -194,12 +227,45 @@ tbody tr:hover{background:rgba(248,250,252,.7)}
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
-  .hamb{display:block}
+  .hamb{display:flex}
   .topbar{padding:12px 16px}
   .content{padding:16px}
   .g4{grid-template-columns:1fr 1fr}
   .g3{grid-template-columns:1fr}
   .overlay.show{display:block}
+}
+
+/* Escritorio (>=1025px): riel fijo de solo iconos; al pasar el mouse se
+   expande y muestra las etiquetas. No depende del botón hamburguesa. */
+@media(min-width:1025px){
+  .sidebar{
+    transform:none !important;
+    width:76px;
+    overflow-x:hidden;
+    transition:width .18s ease, box-shadow .18s ease;
+  }
+  .main{margin-left:76px !important}
+  .sidebar .brand{justify-content:center;padding-left:0;padding-right:0}
+  .sidebar .brand-text,
+  .sidebar .nav button .lbl,
+  .sidebar .foot button .lbl{display:none}
+  .sidebar .nav button{justify-content:center;padding-left:0;padding-right:0}
+  .sidebar .foot button{justify-content:center;padding-left:0;padding-right:0}
+
+  .sidebar:hover{
+    width:250px;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,.45);
+    z-index:50;
+  }
+  .sidebar:hover .brand{justify-content:flex-start;padding-left:20px;padding-right:20px}
+  .sidebar:hover .brand-text{display:block}
+  .sidebar:hover .nav button .lbl,
+  .sidebar:hover .foot button .lbl{display:inline}
+  .sidebar:hover .nav button{justify-content:flex-start;padding-left:12px;padding-right:12px}
+  .sidebar:hover .foot button{justify-content:flex-start;padding-left:12px;padding-right:12px}
+
+  .hamb{display:none !important}
+  .overlay{display:none !important}
 }
 @media(max-width:640px){
   .g4,.g2{grid-template-columns:1fr}
@@ -236,14 +302,26 @@ const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&
 const $ = sel => document.querySelector(sel);
 const moneyHTML = usd => `<div class="money"><div class="u tnum">${fmtUSD(usd)}</div><div class="b tnum">${fmtBs(usd*state.config.tasaBCV)}</div></div>`;
 
-const CATEGORIAS = ['Herramientas','Tornillería','Plomería','Electricidad','Pinturas','Construcción','Adhesivos','Fletes'];
 const ROLES = ['Administrador','Cajero','Inventario','Supervisor'];
+const ROLE_BADGE = {Administrador:'navy',Supervisor:'purple',Cajero:'info',Inventario:'amber'};
 const TIPOS_PRODUCTO = [{v:'normal',l:'Producto normal'},{v:'flete',l:'Flete (precio manual)'}];
-const METODOS_PAGO = ['Efectivo (USD)','Efectivo (Bs)','Pago móvil','Transferencia','Punto de venta','Zelle'];
-const METODOS_DIVISA = ['Efectivo (USD)','Zelle'];
+const UNIDADES = [{v:'und',l:'Unidad'},{v:'kg',l:'Kg'},{v:'gr',l:'Gramos'},{v:'m',l:'Metros'},{v:'l',l:'Litros'},{v:'gal',l:'Galones'},{v:'caja',l:'Caja'},{v:'saco',l:'Saco'},{v:'rollo',l:'Rollo'},{v:'par',l:'Par'},{v:'juego',l:'Juego'}];
+const METODOS_PAGO = ['Efectivo (USD)','Efectivo (Bs)','Pago móvil','Transferencia','Punto de venta','Zelle','Binance'];
+const METODOS_DIVISA = ['Efectivo (USD)','Zelle','Binance'];
 const esMetodoDivisa = m => METODOS_DIVISA.includes(m);
 const DOC_TIPOS = ['V','J','E'];
 const splitDoc = doc => { const m=/^([VJE])-(.*)$/i.exec(doc||''); return m?{tipo:m[1].toUpperCase(),numero:m[2]}:{tipo:'V',numero:doc||''}; };
+
+/* Permisos por rol (misma matriz que el backend real) */
+const esGestion = u => !!u && (u.rol==='Administrador'||u.rol==='Supervisor');
+const puedeInventario = u => esGestion(u) || u?.rol==='Inventario';
+const puedeFacturar = u => esGestion(u) || u?.rol==='Cajero';
+const puedeClientes = u => esGestion(u) || u?.rol==='Cajero';
+const puedeNotas = u => esGestion(u) || u?.rol==='Cajero';
+const puedeReportes = u => esGestion(u);
+const puedeCerrarCaja = u => esGestion(u) || u?.rol==='Cajero';
+const puedeGestionSistema = u => esGestion(u);
+
 const ICON = {
   edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
   trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>',
@@ -252,6 +330,10 @@ const ICON = {
   x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
   user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>',
   back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>',
+  view:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  wrench:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+  menu:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+  logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>',
 };
 
 /* ================================================================ */
@@ -259,30 +341,40 @@ const ICON = {
 /* ================================================================ */
 const state = {
   auth:false, route:'dashboard', sidebar:false,
+  categorias:[
+    {id:uid(),nombre:'Herramientas',esFlete:false},
+    {id:uid(),nombre:'Tornillería',esFlete:false},
+    {id:uid(),nombre:'Plomería',esFlete:false},
+    {id:uid(),nombre:'Electricidad',esFlete:false},
+    {id:uid(),nombre:'Pinturas',esFlete:false},
+    {id:uid(),nombre:'Construcción',esFlete:false},
+    {id:uid(),nombre:'Adhesivos',esFlete:false},
+    {id:uid(),nombre:'Fletes',esFlete:true},
+  ],
   productos:[
-    {id:uid(),codigo:'HE-001',nombre:'Martillo de uña 16 oz',categoria:'Herramientas',tipo:'normal',stock:24,stockMin:5,costoUSD:5.50,precioUSD:8.50,precioBCV:11.05},
-    {id:uid(),codigo:'HE-002',nombre:'Destornillador estría #2',categoria:'Herramientas',tipo:'normal',stock:40,stockMin:8,costoUSD:2.00,precioUSD:3.20,precioBCV:4.16},
-    {id:uid(),codigo:'HE-003',nombre:'Llave ajustable 10"',categoria:'Herramientas',tipo:'normal',stock:15,stockMin:4,costoUSD:7.70,precioUSD:11.90,precioBCV:15.47},
-    {id:uid(),codigo:'HE-004',nombre:'Cinta métrica 5 m',categoria:'Herramientas',tipo:'normal',stock:3,stockMin:6,costoUSD:3.00,precioUSD:4.75,precioBCV:6.18},
-    {id:uid(),codigo:'TO-001',nombre:'Tornillo drywall 1" (100u)',categoria:'Tornillería',tipo:'normal',stock:120,stockMin:20,costoUSD:1.50,precioUSD:2.40,precioBCV:3.12},
-    {id:uid(),codigo:'TO-002',nombre:'Tuerca hexagonal 1/4" (50u)',categoria:'Tornillería',tipo:'normal',stock:80,stockMin:15,costoUSD:1.10,precioUSD:1.80,precioBCV:2.34},
-    {id:uid(),codigo:'TO-003',nombre:'Clavo de acero 2" (1 kg)',categoria:'Tornillería',tipo:'normal',stock:2,stockMin:10,costoUSD:2.00,precioUSD:3.10,precioBCV:4.03},
-    {id:uid(),codigo:'PL-001',nombre:'Tubo PVC 1/2" x 6 m',categoria:'Plomería',tipo:'normal',stock:35,stockMin:10,costoUSD:3.60,precioUSD:5.60,precioBCV:7.28},
-    {id:uid(),codigo:'PL-002',nombre:'Codo PVC 90° 1/2"',categoria:'Plomería',tipo:'normal',stock:60,stockMin:15,costoUSD:0.40,precioUSD:0.65,precioBCV:0.85},
-    {id:uid(),codigo:'PL-003',nombre:'Llave de paso 1/2"',categoria:'Plomería',tipo:'normal',stock:18,stockMin:5,costoUSD:4.80,precioUSD:7.40,precioBCV:9.62},
-    {id:uid(),codigo:'PL-004',nombre:'Teflón rollo 1/2"',categoria:'Plomería',tipo:'normal',stock:90,stockMin:20,costoUSD:0.25,precioUSD:0.45,precioBCV:0.59},
-    {id:uid(),codigo:'EL-001',nombre:'Cable THW #12 (metro)',categoria:'Electricidad',tipo:'normal',stock:300,stockMin:50,costoUSD:0.55,precioUSD:0.90,precioBCV:1.17},
-    {id:uid(),codigo:'EL-002',nombre:'Interruptor sencillo',categoria:'Electricidad',tipo:'normal',stock:45,stockMin:10,costoUSD:1.30,precioUSD:2.10,precioBCV:2.73},
-    {id:uid(),codigo:'EL-003',nombre:'Bombillo LED 9W',categoria:'Electricidad',tipo:'normal',stock:4,stockMin:12,costoUSD:1.10,precioUSD:1.95,precioBCV:2.54},
-    {id:uid(),codigo:'EL-004',nombre:'Breaker 20A',categoria:'Electricidad',tipo:'normal',stock:22,stockMin:6,costoUSD:4.00,precioUSD:6.30,precioBCV:8.19},
-    {id:uid(),codigo:'PI-001',nombre:'Pintura caucho blanco (gal)',categoria:'Pinturas',tipo:'normal',stock:16,stockMin:5,costoUSD:9.50,precioUSD:14.50,precioBCV:18.85},
-    {id:uid(),codigo:'PI-002',nombre:'Brocha 3"',categoria:'Pinturas',tipo:'normal',stock:30,stockMin:8,costoUSD:1.60,precioUSD:2.75,precioBCV:3.58},
-    {id:uid(),codigo:'PI-003',nombre:'Rodillo antigota 9"',categoria:'Pinturas',tipo:'normal',stock:1,stockMin:5,costoUSD:2.30,precioUSD:3.95,precioBCV:5.14},
-    {id:uid(),codigo:'CO-001',nombre:'Cemento gris 42.5 kg',categoria:'Construcción',tipo:'normal',stock:50,stockMin:15,costoUSD:6.80,precioUSD:9.80,precioBCV:12.74},
-    {id:uid(),codigo:'CO-002',nombre:'Bloque de concreto 15 cm',categoria:'Construcción',tipo:'normal',stock:200,stockMin:40,costoUSD:0.55,precioUSD:0.85,precioBCV:1.11},
-    {id:uid(),codigo:'AD-001',nombre:'Silicón transparente',categoria:'Adhesivos',tipo:'normal',stock:28,stockMin:8,costoUSD:2.10,precioUSD:3.40,precioBCV:4.42},
-    {id:uid(),codigo:'AD-002',nombre:'Pega loca 3 g',categoria:'Adhesivos',tipo:'normal',stock:65,stockMin:15,costoUSD:0.70,precioUSD:1.25,precioBCV:1.63},
-    {id:uid(),codigo:'FL-001',nombre:'Flete / Transporte',categoria:'Fletes',tipo:'flete',stock:null,stockMin:null,costoUSD:0,precioUSD:0,precioBCV:0},
+    {id:uid(),codigo:'HE-001',nombre:'Martillo de uña 16 oz',categoria:'Herramientas',tipo:'normal',unidad:'und',stock:24,stockMin:5,costoUSD:5.50,precioUSD:8.50,precioBCV:11.05},
+    {id:uid(),codigo:'HE-002',nombre:'Destornillador estría #2',categoria:'Herramientas',tipo:'normal',unidad:'und',stock:40,stockMin:8,costoUSD:2.00,precioUSD:3.20,precioBCV:4.16},
+    {id:uid(),codigo:'HE-003',nombre:'Llave ajustable 10"',categoria:'Herramientas',tipo:'normal',unidad:'und',stock:15,stockMin:4,costoUSD:7.70,precioUSD:11.90,precioBCV:15.47},
+    {id:uid(),codigo:'HE-004',nombre:'Cinta métrica 5 m',categoria:'Herramientas',tipo:'normal',unidad:'und',stock:3,stockMin:6,costoUSD:3.00,precioUSD:4.75,precioBCV:6.18},
+    {id:uid(),codigo:'TO-001',nombre:'Tornillo drywall 1" (100u)',categoria:'Tornillería',tipo:'normal',unidad:'caja',stock:120,stockMin:20,costoUSD:1.50,precioUSD:2.40,precioBCV:3.12},
+    {id:uid(),codigo:'TO-002',nombre:'Tuerca hexagonal 1/4" (50u)',categoria:'Tornillería',tipo:'normal',unidad:'caja',stock:80,stockMin:15,costoUSD:1.10,precioUSD:1.80,precioBCV:2.34},
+    {id:uid(),codigo:'TO-003',nombre:'Clavo de acero 2" (1 kg)',categoria:'Tornillería',tipo:'normal',unidad:'kg',stock:2,stockMin:10,costoUSD:2.00,precioUSD:3.10,precioBCV:4.03},
+    {id:uid(),codigo:'PL-001',nombre:'Tubo PVC 1/2" x 6 m',categoria:'Plomería',tipo:'normal',unidad:'und',stock:35,stockMin:10,costoUSD:3.60,precioUSD:5.60,precioBCV:7.28},
+    {id:uid(),codigo:'PL-002',nombre:'Codo PVC 90° 1/2"',categoria:'Plomería',tipo:'normal',unidad:'und',stock:60,stockMin:15,costoUSD:0.40,precioUSD:0.65,precioBCV:0.85},
+    {id:uid(),codigo:'PL-003',nombre:'Llave de paso 1/2"',categoria:'Plomería',tipo:'normal',unidad:'und',stock:18,stockMin:5,costoUSD:4.80,precioUSD:7.40,precioBCV:9.62},
+    {id:uid(),codigo:'PL-004',nombre:'Teflón rollo 1/2"',categoria:'Plomería',tipo:'normal',unidad:'rollo',stock:90,stockMin:20,costoUSD:0.25,precioUSD:0.45,precioBCV:0.59},
+    {id:uid(),codigo:'EL-001',nombre:'Cable THW #12 (metro)',categoria:'Electricidad',tipo:'normal',unidad:'m',stock:300,stockMin:50,costoUSD:0.55,precioUSD:0.90,precioBCV:1.17},
+    {id:uid(),codigo:'EL-002',nombre:'Interruptor sencillo',categoria:'Electricidad',tipo:'normal',unidad:'und',stock:45,stockMin:10,costoUSD:1.30,precioUSD:2.10,precioBCV:2.73},
+    {id:uid(),codigo:'EL-003',nombre:'Bombillo LED 9W',categoria:'Electricidad',tipo:'normal',unidad:'und',stock:4,stockMin:12,costoUSD:1.10,precioUSD:1.95,precioBCV:2.54},
+    {id:uid(),codigo:'EL-004',nombre:'Breaker 20A',categoria:'Electricidad',tipo:'normal',unidad:'und',stock:22,stockMin:6,costoUSD:4.00,precioUSD:6.30,precioBCV:8.19},
+    {id:uid(),codigo:'PI-001',nombre:'Pintura caucho blanco (gal)',categoria:'Pinturas',tipo:'normal',unidad:'gal',stock:16,stockMin:5,costoUSD:9.50,precioUSD:14.50,precioBCV:18.85},
+    {id:uid(),codigo:'PI-002',nombre:'Brocha 3"',categoria:'Pinturas',tipo:'normal',unidad:'und',stock:30,stockMin:8,costoUSD:1.60,precioUSD:2.75,precioBCV:3.58},
+    {id:uid(),codigo:'PI-003',nombre:'Rodillo antigota 9"',categoria:'Pinturas',tipo:'normal',unidad:'und',stock:1,stockMin:5,costoUSD:2.30,precioUSD:3.95,precioBCV:5.14},
+    {id:uid(),codigo:'CO-001',nombre:'Cemento gris 42.5 kg',categoria:'Construcción',tipo:'normal',unidad:'saco',stock:50,stockMin:15,costoUSD:6.80,precioUSD:9.80,precioBCV:12.74},
+    {id:uid(),codigo:'CO-002',nombre:'Bloque de concreto 15 cm',categoria:'Construcción',tipo:'normal',unidad:'und',stock:200,stockMin:40,costoUSD:0.55,precioUSD:0.85,precioBCV:1.11},
+    {id:uid(),codigo:'AD-001',nombre:'Silicón transparente',categoria:'Adhesivos',tipo:'normal',unidad:'und',stock:28,stockMin:8,costoUSD:2.10,precioUSD:3.40,precioBCV:4.42},
+    {id:uid(),codigo:'AD-002',nombre:'Pega loca 3 g',categoria:'Adhesivos',tipo:'normal',unidad:'gr',stock:65,stockMin:15,costoUSD:0.70,precioUSD:1.25,precioBCV:1.63},
+    {id:uid(),codigo:'FL-001',nombre:'Flete / Transporte',categoria:'Fletes',tipo:'flete',unidad:'und',stock:null,stockMin:null,costoUSD:0,precioUSD:0,precioBCV:0},
   ],
   clientes:[
     {id:uid(),nombre:'Construcciones Bolívar C.A.',doc:'J-30123456-7',telefono:'0412-1234567',direccion:'Av. Principal, Galpón 4, Maracay'},
@@ -291,12 +383,21 @@ const state = {
     {id:uid(),nombre:'María González',doc:'V-19876543',telefono:'0416-3334455',direccion:'Sector Centro, Casa 18'},
   ],
   usuarios:[
-    {id:uid(),usuario:'admin',nombre:'Administrador',rol:'Administrador',activo:true},
-    {id:uid(),usuario:'caja01',nombre:'Luisa Pérez',rol:'Cajero',activo:true},
-    {id:uid(),usuario:'inv01',nombre:'Carlos Mendoza',rol:'Inventario',activo:false},
+    {id:uid(),usuario:'admin',nombre:'Administrador',rol:'Administrador',telefono:'0412-0000001',activo:true},
+    {id:uid(),usuario:'sup01',nombre:'Ana Torres',rol:'Supervisor',telefono:'0412-0000002',activo:true},
+    {id:uid(),usuario:'caja01',nombre:'Luisa Pérez',rol:'Cajero',telefono:'0412-1234567',activo:true},
+    {id:uid(),usuario:'caja02',nombre:'Rosa Fernández',rol:'Cajero',telefono:'0414-2345678',activo:true},
+    {id:uid(),usuario:'inv01',nombre:'Carlos Mendoza',rol:'Inventario',telefono:'0416-3456789',activo:false},
   ],
   notas:[],
-  config:{tasaBCV:142.50},
+  cierres:[],
+  tasas:[],
+  config:{
+    tasaBCV:142.50,
+    businessName:'Ferremateriales Ruiz 2020', rifTipo:'J', rifNumero:'30111222-3',
+    businessPhone:'0243-2345678', businessAddress:'Av. Bolívar, Galpón 7, Maracay, Aragua',
+    businessEmail:'contacto@ferreruiz2020.com',
+  },
   // facturación transient
   cart:[], facCliente:'', facCliDocTipo:'V', facCliDocQuery:'', facDescGlobal:0, facQuery:'', facMetodo:'', facMoneda:'USD', facRef:'', facPagoRegistrado:false,
   // filtros
@@ -319,42 +420,57 @@ const state = {
   const pf = codigo => state.productos.find(p=>p.codigo===codigo);
   const itm = (codigo,cantidad) => { const p=pf(codigo); return {productoId:p.id,cartId:uid(),codigo:p.codigo,nombre:p.nombre,tipo:p.tipo,precioUSD:p.precioUSD,precioBCV:p.precioBCV,costoUSD:p.costoUSD||0,cantidad,stockDisp:p.stock}; };
   const flete = precio => { const p=pf('FL-001'); return {productoId:p.id,cartId:uid(),codigo:p.codigo,nombre:p.nombre,tipo:'flete',precioUSD:precio,precioBCV:precio,costoUSD:0,cantidad:1,stockDisp:null}; };
-  const mkNota = (numero,diasAtras,horas,clienteIdx,metodo,items,descGlobal,referencia)=>{
+  const cajero1=state.usuarios.find(u=>u.usuario==='caja01'), cajero2=state.usuarios.find(u=>u.usuario==='caja02'), admin=state.usuarios.find(u=>u.usuario==='admin');
+  const mkNota = (numero,diasAtras,horas,clienteIdx,metodo,items,descGlobal,referencia,cajero)=>{
     const d=new Date(); d.setDate(d.getDate()-diasAtras); d.setHours(horas,15,0,0);
     const cliente=state.clientes[clienteIdx%state.clientes.length];
     const esDivisa=esMetodoDivisa(metodo);
     const dg=metodo==='Efectivo (USD)'?descGlobal:0;
     const subtotalUSD=items.reduce((s,i)=>s+(esDivisa?i.precioUSD:i.precioBCV)*i.cantidad,0);
     const totalUSD=Math.round(subtotalUSD*(1-dg/100)*100)/100;
+    const c=cajero||cajero1;
     return {id:uid(),numero,fecha:d.toLocaleDateString('es-VE',{day:'2-digit',month:'2-digit',year:'numeric'}),ts:d.getTime(),
       clienteId:cliente.id,clienteNombre:cliente.nombre,items,descGlobal:dg,subtotalUSD,tasa:state.config.tasaBCV,totalUSD,
-      metodo,referencia:referencia||'',moneda:esDivisa?'USD':'BS'};
+      metodo,referencia:referencia||'',moneda:esDivisa?'USD':'BS',cajeroId:c.id,cajeroNombre:c.nombre};
   };
   const seed=[
-    mkNota('NE-00001',60,9,0,'Efectivo (USD)',[itm('HE-001',2),itm('TO-001',5)],0),
-    mkNota('NE-00002',50,10,1,'Transferencia',[itm('CO-001',10),itm('CO-002',50)],0,'TRF-8841'),
-    mkNota('NE-00003',35,11,2,'Pago móvil',[itm('EL-001',20),itm('EL-002',4),itm('EL-004',2)],0,'PM-5521'),
-    mkNota('NE-00004',33,14,0,'Punto de venta',[itm('PI-001',2),itm('PI-002',3),flete(15)],0),
-    mkNota('NE-00005',25,9,3,'Efectivo (Bs)',[itm('HE-003',1),itm('HE-002',2)],0),
-    mkNota('NE-00006',20,16,1,'Zelle',[itm('PL-001',4),itm('PL-002',8),itm('PL-003',2)],0,'ZL-2290'),
-    mkNota('NE-00007',18,10,2,'Efectivo (USD)',[itm('AD-001',5),itm('AD-002',10),flete(10)],0),
-    mkNota('NE-00008',14,12,0,'Pago móvil',[itm('EL-003',6),itm('EL-001',15)],0,'PM-6674'),
-    mkNota('NE-00009',9,9,3,'Punto de venta',[itm('HE-001',1),itm('HE-003',2),flete(20)],0),
-    mkNota('NE-00010',7,15,1,'Efectivo (USD)',[itm('CO-001',20)],0),
-    mkNota('NE-00011',4,11,2,'Transferencia',[itm('TO-001',10),itm('TO-002',10)],0,'TRF-9123'),
-    mkNota('NE-00012',2,13,0,'Pago móvil',[itm('PI-001',1),itm('PI-003',2),flete(12)],0,'PM-7788'),
-    mkNota('NE-00013',1,10,3,'Efectivo (USD)',[itm('EL-003',10),itm('EL-002',5)],8),
-    mkNota('NE-00014',0,9,1,'Punto de venta',[itm('HE-001',3),itm('HE-004',2),flete(18)],0),
-    mkNota('NE-00015',0,15,2,'Efectivo (USD)',[itm('PL-001',2),itm('PL-004',5)],0),
+    mkNota('NE-00001',60,9,0,'Efectivo (USD)',[itm('HE-001',2),itm('TO-001',5)],0,'',cajero1),
+    mkNota('NE-00002',50,10,1,'Transferencia',[itm('CO-001',10),itm('CO-002',50)],0,'TRF-8841',cajero2),
+    mkNota('NE-00003',35,11,2,'Pago móvil',[itm('EL-001',20),itm('EL-002',4),itm('EL-004',2)],0,'PM-5521',cajero1),
+    mkNota('NE-00004',33,14,0,'Punto de venta',[itm('PI-001',2),itm('PI-002',3),flete(15)],0,'',cajero2),
+    mkNota('NE-00005',25,9,3,'Efectivo (Bs)',[itm('HE-003',1),itm('HE-002',2)],0,'',cajero1),
+    mkNota('NE-00006',20,16,1,'Zelle',[itm('PL-001',4),itm('PL-002',8),itm('PL-003',2)],0,'ZL-2290',cajero2),
+    mkNota('NE-00007',18,10,2,'Efectivo (USD)',[itm('AD-001',5),itm('AD-002',10),flete(10)],0,'',cajero1),
+    mkNota('NE-00008',14,12,0,'Pago móvil',[itm('EL-003',6),itm('EL-001',15)],0,'PM-6674',cajero2),
+    mkNota('NE-00009',9,9,3,'Punto de venta',[itm('HE-001',1),itm('HE-003',2),flete(20)],0,'',cajero1),
+    mkNota('NE-00010',7,15,1,'Efectivo (USD)',[itm('CO-001',20)],0,'',admin),
+    mkNota('NE-00011',4,11,2,'Transferencia',[itm('TO-001',10),itm('TO-002',10)],0,'TRF-9123',cajero2),
+    mkNota('NE-00012',2,13,0,'Pago móvil',[itm('PI-001',1),itm('PI-003',2),flete(12)],0,'PM-7788',cajero1),
+    mkNota('NE-00013',1,10,3,'Efectivo (USD)',[itm('EL-003',10),itm('EL-002',5)],8,'',cajero2),
+    mkNota('NE-00014',0,9,1,'Punto de venta',[itm('HE-001',3),itm('HE-004',2),flete(18)],0,'',cajero1),
+    mkNota('NE-00015',0,15,2,'Efectivo (USD)',[itm('PL-001',2),itm('PL-004',5)],0,'',cajero2),
   ];
   seed.forEach(n=>state.notas.push(n));
+})();
+
+/* ================================================================ */
+/*  Datos de demostración: historial de tasas BCV                  */
+/* ================================================================ */
+(function seedTasasDemo(){
+  const dias=[9,8,7,6,5,4,3,2,1];
+  let tasa=138.20;
+  dias.forEach((diasAtras,idx)=>{
+    const d=new Date(); d.setDate(d.getDate()-diasAtras);
+    tasa=Math.round((tasa+(0.4+Math.random()*0.9))*100)/100;
+    state.tasas.push({fecha:toISODate(d),tasa,origen:idx%4===3?'MANUAL':'AUTO'});
+  });
 })();
 
 /* ================================================================ */
 /*  Datos de demostración: registro de actividad de ejemplo         */
 /* ================================================================ */
 (function seedActividadDemo(){
-  const admin=state.usuarios[0], cajero=state.usuarios[1], inventario=state.usuarios[2];
+  const admin=state.usuarios.find(u=>u.usuario==='admin'), cajero=state.usuarios.find(u=>u.usuario==='caja01'), inventario=state.usuarios.find(u=>u.usuario==='inv01');
   const hace=dias=>{ const d=new Date(); d.setDate(d.getDate()-dias); d.setHours(9,30,0,0); return d.getTime(); };
   const entradas=[
     [inventario,15,'Creó producto','HE-004 — Cinta métrica 5 m'],
@@ -377,17 +493,29 @@ const state = {
 /* ================================================================ */
 /*  Router / shell                                                  */
 /* ================================================================ */
-const NAV = [
-  {key:'dashboard',label:'Inicio',icon:'▣'},
-  {key:'inventario',label:'Inventario',icon:'▦'},
-  {key:'facturacion',label:'Facturación',icon:'🧾'},
-  {key:'notas',label:'Notas de entrega',icon:'📄'},
-  {key:'reportes',label:'Reportes',icon:'📊'},
-  {key:'cierres',label:'Cierres',icon:'💰'},
-  {key:'clientes',label:'Clientes',icon:'👥'},
-  {key:'usuarios',label:'Usuarios',icon:'⚙'},
-  {key:'config',label:'Configuración',icon:'🛠'},
+const NAV_ALL = [
+  {key:'dashboard',label:'Inicio',sub:'Resumen general del negocio',test:()=>true,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h8V3H3zM13 21h8V11h-8zM13 3v6h8V3zM3 21h8v-6H3z"/></svg>'},
+  {key:'inventario',label:'Inventario',sub:'Productos, categorías y existencias',test:puedeInventario,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'},
+  {key:'facturacion',label:'Facturación',sub:'Registra una nueva venta',test:puedeFacturar,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>'},
+  {key:'clientes',label:'Clientes',sub:'Directorio de clientes registrados',test:puedeClientes,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'},
+  {key:'notas',label:'Notas de entrega',sub:'Historial de ventas facturadas',test:puedeNotas,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'},
+  {key:'reportes',label:'Reportes',sub:'Ventas y utilidad por período',test:puedeReportes,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>'},
+  {key:'mi-cierre',label:'Mi cierre de caja',sub:'Cierra tu turno y consulta tu historial',test:puedeCerrarCaja,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'},
+  {key:'cierre-general',label:'Cierre general',sub:'Consolidado de todos los cajeros del día',test:puedeGestionSistema,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>'},
+  {key:'usuarios',label:'Usuarios',sub:'Cuentas y roles del sistema',test:puedeGestionSistema,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>'},
+  {key:'config',label:'Configuración',sub:'Tasa del dólar y datos de la ferretería',test:puedeGestionSistema,
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'},
 ];
+const navFor = u => NAV_ALL.filter(n=>n.test(u));
 
 function mount(){
   if(!state.auth){ renderLogin(); return; }
@@ -395,22 +523,25 @@ function mount(){
 }
 
 function renderLogin(){
+  const usuariosHint = state.usuarios.map(u=>`<b>${esc(u.usuario)}</b> (${esc(u.rol)})`).join(' · ');
   $('#app').innerHTML = `
   <div class="login">
     <div class="login-box">
       <div class="login-head">
-        <div class="logo">F</div>
-        <h1>FerreSys</h1>
+        <div class="logo">${ICON.wrench}</div>
+        <h1>${esc(state.config.businessName)}</h1>
       </div>
       <div class="login-card">
         <h2>Iniciar sesión</h2>
+        <p class="hint">Ingresa con tu usuario y contraseña.</p>
         <div class="stack" style="gap:14px">
           <label class="field"><span>Usuario</span><input id="lg-user" value="admin" autocomplete="off"></label>
           <label class="field"><span>Contraseña</span><input id="lg-pass" type="password" value="admin"></label>
           <div id="lg-err"></div>
-          <button class="btn btn-primary" id="lg-btn" style="width:100%">Entrar</button>
+          <button class="btn btn-accent" id="lg-btn" style="width:100%">Entrar</button>
         </div>
       </div>
+      <div class="login-demo-users">Demo: usa cualquiera de estos usuarios con la contraseña <b>admin</b><br>${usuariosHint}</div>
     </div>
   </div>`;
   const tryLogin = ()=>{
@@ -419,7 +550,7 @@ function renderLogin(){
     const usuario=state.usuarios.find(x=>x.usuario.toLowerCase()===u);
     if(!usuario||p!=='admin'){ $('#lg-err').innerHTML='<div class="err">Usuario o contraseña incorrectos. Usa admin / admin.</div>'; return; }
     if(!usuario.activo){ $('#lg-err').innerHTML='<div class="err">Este usuario está inactivo. Contacta a un administrador.</div>'; return; }
-    state.auth=true; state.currentUserId=usuario.id; mount();
+    state.auth=true; state.currentUserId=usuario.id; state.route='dashboard'; mount();
   };
   $('#lg-btn').onclick=tryLogin;
   $('#lg-user').onkeydown=e=>{if(e.key==='Enter')$('#lg-pass').focus()};
@@ -427,24 +558,35 @@ function renderLogin(){
 }
 
 function renderShell(){
-  const navHTML = NAV.map(n=>`<button data-nav="${n.key}" class="${state.route===n.key?'active':''}"><span class="ico">${n.icon}</span>${n.label}</button>`).join('');
+  const user = state.usuarios.find(x=>x.id===state.currentUserId);
+  const nav = navFor(user);
+  if(!nav.some(n=>n.key===state.route)) state.route='dashboard';
+  const navHTML = nav.map(n=>`<button data-nav="${n.key}" class="${state.route===n.key?'active':''}"><span class="ico">${n.icon}</span><span class="lbl">${n.label}</span></button>`).join('');
+  const activeNav = nav.find(n=>n.key===state.route);
   $('#app').innerHTML = `
   <div class="layout">
     <aside class="sidebar ${state.sidebar?'open':''}" id="sidebar">
-      <div class="brand"><div class="logo">F</div><div><div class="t1">Ferremateriales Ruiz 2020</div></div></div>
+      <div class="brand"><div class="logo">${ICON.wrench}</div><div class="brand-text"><div class="t1">${esc(state.config.businessName)}</div></div></div>
       <nav class="nav">${navHTML}</nav>
-      <div class="foot"><button data-action="logout"><span class="ico">⎋</span>Cerrar sesión</button></div>
+      <div class="foot"><button data-action="logout"><span class="ico">${ICON.logout}</span><span class="lbl">Cerrar sesión</span></button></div>
     </aside>
     <div class="overlay ${state.sidebar?'show':''}" id="overlay"></div>
     <div class="main">
       <header class="topbar">
         <div class="row" style="align-items:center;gap:12px">
-          <button class="hamb" id="hamb">☰</button>
-          <h1>${NAV.find(n=>n.key===state.route).label}</h1>
+          <button class="hamb" id="hamb">${ICON.menu}</button>
+          <div><h1>${activeNav.label}</h1><p class="page-sub">${activeNav.sub}</p></div>
         </div>
         <div class="row" style="align-items:center;gap:12px">
-          <div class="rate"><span class="lbl">TASA BCV</span><span class="val tnum">${fmtBs(state.config.tasaBCV)}<span class="muted" style="font-weight:400;font-size:12px"> / $</span></span></div>
-          <div class="avatar" id="topbar-avatar" title="${esc(currentUserNombre())} · Ver mi perfil" style="cursor:pointer">${initials(currentUserNombre())}</div>
+          <div class="rate"><div class="rate-row"><span class="rate-dot"></span><span class="rate-lbl">Tasa BCV</span></div><div class="rate-val tnum">${state.config.tasaBCV.toFixed(2)}<span class="rate-sub">Bs/USD</span></div></div>
+          <div class="user-menu" id="user-menu">
+            <button type="button" class="avatar" id="user-menu-btn" title="${esc(currentUserNombre())}">${initials(currentUserNombre())}</button>
+            <div class="user-menu-dropdown" id="user-menu-dropdown">
+              <div class="user-menu-name">${esc(currentUserNombre())}</div>
+              <a href="#" id="user-menu-perfil">Ver perfil</a>
+              <button type="button" data-action="logout">Cerrar sesión</button>
+            </div>
+          </div>
         </div>
       </header>
       <main class="content" id="content"></main>
@@ -453,15 +595,16 @@ function renderShell(){
   // nav wiring
   document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{state.route=b.dataset.nav;state.sidebar=false;if(state.route!=='usuarios')state.perfilUserId='';renderShell();});
   $('#hamb').onclick=()=>{state.sidebar=!state.sidebar;renderShell();};
-  $('#topbar-avatar').onclick=()=>{state.perfilUserId=state.currentUserId;state.route='usuarios';state.sidebar=false;renderShell();};
   $('#overlay').onclick=()=>{state.sidebar=false;renderShell();};
-  $('[data-action="logout"]').onclick=()=>{state.auth=false;state.currentUserId='';state.route='dashboard';mount();};
+  document.querySelectorAll('[data-action="logout"]').forEach(b=>b.onclick=()=>{state.auth=false;state.currentUserId='';state.route='dashboard';mount();});
+  $('#user-menu-btn').onclick=e=>{e.stopPropagation();$('#user-menu').classList.toggle('open');};
+  $('#user-menu-perfil').onclick=e=>{e.preventDefault();state.perfilUserId=state.currentUserId;state.route='usuarios';state.sidebar=false;renderShell();};
   renderContent();
 }
 
 function renderContent(){
   const c=$('#content'); c.classList.add('fade');
-  ({dashboard:renderDashboard,inventario:renderInventario,facturacion:renderFacturacion,notas:renderNotas,reportes:renderReportes,cierres:renderCierres,clientes:renderClientes,usuarios:renderUsuarios,config:renderConfig}[state.route])(c);
+  ({dashboard:renderDashboard,inventario:renderInventario,facturacion:renderFacturacion,notas:renderNotas,reportes:renderReportes,'mi-cierre':renderMiCierre,'cierre-general':renderCierreGeneral,clientes:renderClientes,usuarios:renderUsuarios,config:renderConfig}[state.route])(c);
 }
 
 /* ================================================================ */
@@ -512,7 +655,7 @@ function renderDashboard(c){
       <div class="stat green"><div class="l">Ventas de hoy</div><div class="v tnum">${fmtUSD(totalHoy)}</div><div class="s">${fmtBs(totalHoy*tasa)} · ${ventasHoy.length} nota(s)</div></div>
       <div class="stat"><div class="l">Valor de inventario</div><div class="v tnum">${fmtUSD(invUSD)}</div><div class="s">${fmtBs(invUSD*tasa)}</div></div>
       <div class="stat ${bajos.length?'red':'green'}"><div class="l">Productos bajo stock</div><div class="v tnum">${bajos.length}</div><div class="s">de ${p.length} productos</div></div>
-      <div class="stat amber"><div class="l">Clientes ACTIVOS</div><div class="v tnum">${state.clientes.length}</div><div class="s">registrados</div></div>
+      <div class="stat info"><div class="l">Clientes registrados</div><div class="v tnum">${state.clientes.length}</div><div class="s">registrados</div></div>
     </div>
     <div class="row" style="flex-wrap:wrap;gap:16px;align-items:stretch">
       <div class="card tasa-bcv-card" style="flex:0 0 320px">
@@ -541,8 +684,8 @@ function renderDashboard(c){
         <div style="max-height:300px;overflow-y:auto">
           ${bajos.length?bajos.map(x=>`<div style="padding:12px 20px;border-top:1px solid var(--slate-50);display:flex;justify-content:space-between;align-items:center">
             <div><div style="font-weight:600;color:var(--slate-700)">${esc(x.nombre)}</div><div class="muted" style="font-size:12px">${x.codigo} · ${x.categoria}</div></div>
-            <div style="text-align:right"><span class="badge red">${x.stock} und</span><div class="muted" style="font-size:11px;margin-top:2px">mín. ${x.stockMin}</div></div>
-          </div>`).join(''):'<div class="empty">Todo el inventario está por encima del mínimo. 👍</div>'}
+            <div style="text-align:right"><span class="badge red">${x.stock} ${unidadLabel(x.unidad)}</span><div class="muted" style="font-size:11px;margin-top:2px">mín. ${x.stockMin}</div></div>
+          </div>`).join(''):'<div class="empty">Todo el inventario está por encima del mínimo.</div>'}
         </div>
       </div>
       <div class="card">
@@ -561,6 +704,7 @@ function renderDashboard(c){
 /* ================================================================ */
 /*  Inventario                                                      */
 /* ================================================================ */
+const unidadLabel = v => (UNIDADES.find(x=>x.v===v)||{}).l || v || 'und';
 function invFiltered(){
   return state.productos.filter(p=>
     (state.invCat==='Todas'||p.categoria===state.invCat) &&
@@ -571,11 +715,11 @@ function invRows(){
   if(!list.length) return '<tr><td colspan="8" class="empty">No hay productos que coincidan con la búsqueda.</td></tr>';
   return list.map(p=>{
     const esFlete=p.tipo==='flete';
-    const tone=esFlete?'slate':(p.stock<=p.stockMin?'red':p.stock<=p.stockMin*2?'amber':'green');
-    const stockCell=esFlete?'<span class="badge slate">N/A</span>':`<span class="badge ${tone}">${p.stock} und</span>`;
+    const tone=esFlete?'slate':(p.stock<=p.stockMin?'red':p.stock<=p.stockMin*2?'info':'green');
+    const stockCell=esFlete?'<span class="badge slate">N/A</span>':`<span class="badge ${tone}">${p.stock} ${unidadLabel(p.unidad)}</span>`;
     const costoCell=esFlete?'<span class="muted">—</span>':moneyHTML(p.costoUSD||0);
-    const precioUsdCell=esFlete?'<span class="badge amber">Manual</span>':`<span class="tnum" style="font-weight:600">${fmtUSD(p.precioUSD)}</span>`;
-    const precioBcvCell=esFlete?'<span class="badge amber">Manual</span>':`<span class="tnum" style="font-weight:600;color:var(--navy-700)">${fmtUSD(p.precioBCV)}</span>`;
+    const precioUsdCell=esFlete?'<span class="badge info">Manual</span>':`<span class="tnum" style="font-weight:600">${fmtUSD(p.precioUSD)}</span>`;
+    const precioBcvCell=esFlete?'<span class="badge info">Manual</span>':`<span class="tnum" style="font-weight:600;color:var(--navy-700)">${fmtUSD(p.precioBCV)}</span>`;
     return `<tr>
       <td class="mono muted">${p.codigo}</td>
       <td style="font-weight:600;color:var(--slate-700)">${esc(p.nombre)}${esFlete?' <span class="badge navy">Flete</span>':''}</td>
@@ -584,20 +728,51 @@ function invRows(){
       <td class="hide-sm">${costoCell}</td>
       <td>${precioUsdCell}</td>
       <td>${precioBcvCell}</td>
-      <td style="text-align:right;white-space:nowrap"><button class="iconbtn" title="Editar" data-edit="${p.id}">${ICON.edit}</button><button class="iconbtn danger" title="Eliminar" data-del="${p.id}">${ICON.trash}</button></td>
+      <td style="text-align:right;white-space:nowrap"><button class="iconbtn edit" title="Editar" data-edit="${p.id}">${ICON.edit}</button><button class="iconbtn danger" title="Eliminar" data-del="${p.id}">${ICON.trash}</button></td>
     </tr>`;
   }).join('');
 }
+function categoriaChipsHTML(){
+  if(!state.categorias.length) return '<span class="muted" style="font-size:13px">Sin categorías todavía.</span>';
+  return state.categorias.map(cat=>`<span class="row" style="align-items:center;gap:2px">
+    <span class="badge ${cat.esFlete?'navy':'slate'}">${esc(cat.nombre)}</span>
+    ${cat.esFlete?'':`<button type="button" class="cat-action" title="Editar categoría" data-cat-edit="${cat.id}">${ICON.edit}</button>
+    <button type="button" class="cat-action danger" title="Eliminar categoría" data-cat-del="${cat.id}">${ICON.x}</button>`}
+  </span>`).join('');
+}
 function renderInventario(c){
+  const user=state.usuarios.find(x=>x.id===state.currentUserId);
+  const puedeAjuste=puedeGestionSistema(user);
   c.innerHTML=`
   <div class="stack">
     <div class="row between" style="flex-wrap:wrap;gap:12px">
       <div class="row" style="flex:1;max-width:520px">
         ${clearableInput('inv-q','Buscar por nombre o código…',state.invQuery,320)}
-        <select class="input" id="inv-cat" style="max-width:180px"><option>Todas</option>${CATEGORIAS.map(x=>`<option ${state.invCat===x?'selected':''}>${x}</option>`).join('')}</select>
+        <select class="input" id="inv-cat" style="max-width:180px"><option>Todas</option>${state.categorias.filter(x=>!x.esFlete).map(x=>`<option ${state.invCat===x.nombre?'selected':''}>${esc(x.nombre)}</option>`).join('')}</select>
       </div>
-      <button class="btn btn-primary" id="inv-new" title="Nuevo producto"><span class="ic">${ICON.plus}</span></button>
+      <div class="row" style="gap:8px">
+        <button type="button" class="btn btn-ghost" id="inv-cat-new" title="Nueva categoría">+ Categoría</button>
+        <button class="btn btn-primary" id="inv-new" title="Nuevo producto"><span class="ic">${ICON.plus}</span></button>
+      </div>
     </div>
+    <div class="card" style="padding:14px 20px">
+      <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center">
+        <span class="muted" style="font-size:12px;font-weight:600;text-transform:uppercase;align-self:center">Categorías</span>
+        ${categoriaChipsHTML()}
+      </div>
+    </div>
+    ${puedeAjuste?`
+    <div class="card">
+      <div class="card-h"><h3>Ajuste masivo de precios</h3></div>
+      <div style="padding:16px 20px">
+        <div class="grid g4" style="align-items:flex-end;gap:12px">
+          <label class="field"><span>Acción</span><select class="input" id="cfg-tipo"><option value="aumentar">Aumentar (+)</option><option value="disminuir">Disminuir (−)</option></select></label>
+          <label class="field"><span>Porcentaje (%)</span><input class="input" id="cfg-pct" type="text" inputmode="numeric" data-numeric="int" value="10"></label>
+          <label class="field"><span>Aplicar a</span><select class="input" id="cfg-cat-adj"><option>Todas</option>${state.categorias.filter(x=>!x.esFlete).map(x=>`<option>${esc(x.nombre)}</option>`).join('')}</select></label>
+          <button class="btn btn-accent" id="cfg-ajuste">Aplicar ajuste</button>
+        </div>
+      </div>
+    </div>`:''}
     <div class="card"><div class="tablewrap"><table>
       <thead><tr><th>Código</th><th>Producto</th><th class="hide-sm">Categoría</th><th style="text-align:center">Existencia</th><th class="hide-sm">Costo</th><th>Precio Efvo $</th><th>Precio Bs (BCV)</th><th></th></tr></thead>
       <tbody id="inv-tbody">${invRows()}</tbody>
@@ -606,8 +781,25 @@ function renderInventario(c){
   $('#inv-q').oninput=e=>{state.invQuery=e.target.value;$('#inv-tbody').innerHTML=invRows();wireInvRows();};
   $('#inv-cat').onchange=e=>{state.invCat=e.target.value;$('#inv-tbody').innerHTML=invRows();wireInvRows();};
   $('#inv-new').onclick=()=>openProducto(null);
+  $('#inv-cat-new').onclick=()=>openCategoria(null);
+  if(puedeAjuste){
+    $('#cfg-ajuste').onclick=()=>{
+      const tipo=$('#cfg-tipo').value, pct=Number($('#cfg-pct').value), cat=$('#cfg-cat-adj').value;
+      if(!(pct>0&&pct<=90)){ showToast('El porcentaje debe estar entre 1 y 90.','error'); return; }
+      const factor=tipo==='aumentar'?(1+pct/100):(1-pct/100);
+      const afectados=state.productos.filter(p=>p.tipo!=='flete'&&(cat==='Todas'||p.categoria===cat));
+      if(!afectados.length){ showToast('No hay productos que coincidan con esa categoría.','error'); return; }
+      confirmModal({title:'Aplicar ajuste de precios',message:`Se ${tipo==='aumentar'?'aumentarán':'reducirán'} los precios (efectivo y Bs BCV) en ${pct}% a ${afectados.length} producto(s) de "${cat}". Esta acción no se puede deshacer.`,confirmLabel:'Aplicar',onConfirm:()=>{
+        afectados.forEach(p=>{ p.precioUSD=Math.round(p.precioUSD*factor*100)/100; p.precioBCV=Math.round(p.precioBCV*factor*100)/100; });
+        logActividad('Aplicó ajuste masivo de precios',tipo+' '+pct+'% · '+cat+' · '+afectados.length+' producto(s)');
+        showToast(`Precios actualizados (${tipo} ${pct}%) en ${afectados.length} producto(s).`);
+        renderInventario($('#content'));
+      }});
+    };
+  }
   wireClearButtons();
   wireInvRows();
+  wireCategoriaChips();
 }
 function wireInvRows(){
   document.querySelectorAll('#inv-tbody [data-edit]').forEach(b=>b.onclick=()=>openProducto(state.productos.find(p=>p.id===b.dataset.edit)));
@@ -621,8 +813,42 @@ function wireInvRows(){
     }});
   });
 }
+function wireCategoriaChips(){
+  document.querySelectorAll('[data-cat-edit]').forEach(b=>b.onclick=()=>openCategoria(state.categorias.find(x=>x.id===b.dataset.catEdit)));
+  document.querySelectorAll('[data-cat-del]').forEach(b=>b.onclick=()=>{
+    const cat=state.categorias.find(x=>x.id===b.dataset.catDel); if(!cat)return;
+    confirmModal({title:'Eliminar categoría',message:'¿Eliminar la categoría "'+cat.nombre+'"? Esta acción no se puede deshacer.',confirmLabel:'Eliminar',onConfirm:()=>{
+      const enUso=state.productos.some(p=>p.categoria===cat.nombre && p.tipo!=='flete');
+      if(enUso){ showToast('No se puede eliminar la categoría "'+cat.nombre+'" porque tiene productos asociados.','error'); return; }
+      state.categorias=state.categorias.filter(x=>x.id!==cat.id);
+      logActividad('Eliminó categoría',cat.nombre);
+      showToast('Categoría eliminada correctamente.');
+      renderInventario($('#content'));
+    }});
+  });
+}
+function openCategoria(cat){
+  const f=cat||{nombre:''};
+  openModal(cat?'Editar categoría':'Nueva categoría',`
+    <div id="cat-err"></div>
+    <label class="field"><span>Nombre de la categoría</span><input id="cat-nom" value="${esc(f.nombre)}"></label>`,()=>{
+      const nom=$('#cat-nom').value.trim();
+      const errs=[];
+      if(!nom) errs.push('El nombre es obligatorio.');
+      else if(state.categorias.some(x=>x.nombre.toLowerCase()===nom.toLowerCase()&&(!cat||x.id!==cat.id))) errs.push('Ya existe una categoría con ese nombre.');
+      if(errs.length){ $('#cat-err').innerHTML=`<div class="err">${errs.map(esc).join('<br>')}</div>`; return false; }
+      const esNuevo=!cat;
+      if(cat){ state.productos.forEach(p=>{ if(p.categoria===cat.nombre) p.categoria=nom; }); cat.nombre=nom; }
+      else{ state.categorias.push({id:uid(),nombre:nom,esFlete:false}); }
+      closeModal();
+      logActividad(esNuevo?'Creó categoría':'Editó categoría',nom);
+      showToast(esNuevo?'Categoría creada correctamente.':'Categoría actualizada correctamente.');
+      renderInventario($('#content'));
+    });
+}
 function openProducto(p){
-  const f=p||{codigo:'',nombre:'',categoria:CATEGORIAS[0],tipo:'normal',stock:0,stockMin:0,costoUSD:0,precioUSD:0,precioBCV:0};
+  const cats=state.categorias.filter(x=>!x.esFlete);
+  const f=p||{codigo:'',nombre:'',categoria:'',tipo:'normal',unidad:'und',stock:'',stockMin:'',costoUSD:'',precioUSD:'',precioBCV:''};
   const esFlete=f.tipo==='flete';
   openModal(p?'Editar producto':'Nuevo producto',`
     <div id="m-err"></div>
@@ -630,14 +856,14 @@ function openProducto(p){
       <label class="field"><span>Código</span><input id="m-cod" value="${esc(f.codigo)}"></label>
       <label class="field"><span>Tipo</span><select id="m-tipo">${TIPOS_PRODUCTO.map(t=>`<option value="${t.v}" ${f.tipo===t.v?'selected':''}>${t.l}</option>`).join('')}</select></label>
       <label class="field" style="grid-column:1/3"><span>Nombre del producto</span><input id="m-nom" value="${esc(f.nombre)}"></label>
-      <label class="field"><span>Categoría</span><select id="m-cat">${CATEGORIAS.map(x=>`<option ${f.categoria===x?'selected':''}>${x}</option>`).join('')}</select></label>
+      <label class="field"><span>Categoría</span><select id="m-cat"><option value="">Seleccione…</option>${cats.map(x=>`<option ${f.categoria===x.nombre?'selected':''}>${esc(x.nombre)}</option>`).join('')}</select></label>
+      <label class="field"><span>Unidad de medida</span><select id="m-und">${UNIDADES.map(u=>`<option value="${u.v}" ${(f.unidad||'und')===u.v?'selected':''}>${u.l}</option>`).join('')}</select></label>
+      <label class="field"><span>Existencia (stock)</span><input id="m-stk" type="text" inputmode="numeric" data-numeric="int" value="${esFlete?0:f.stock}" ${esFlete?'disabled':''}></label>
+      <label class="field"><span>Stock mínimo</span><input id="m-min" type="text" inputmode="numeric" data-numeric="int" value="${esFlete?0:f.stockMin}" ${esFlete?'disabled':''}></label>
+      <label class="field"><span>Costo (USD)</span><input id="m-cos" type="text" inputmode="decimal" data-numeric="decimal" value="${esFlete?0:(f.costoUSD||'')}" ${esFlete?'disabled':''}></label>
       <div></div>
-      <label class="field"><span>Existencia (stock)</span><input id="m-stk" type="number" min="0" value="${esFlete?0:f.stock}" ${esFlete?'disabled':''}></label>
-      <label class="field"><span>Stock mínimo</span><input id="m-min" type="number" min="0" value="${esFlete?0:f.stockMin}" ${esFlete?'disabled':''}></label>
-      <label class="field"><span>Costo (USD)</span><input id="m-cos" type="number" step="0.01" min="0" value="${esFlete?0:(f.costoUSD||0)}" ${esFlete?'disabled':''}></label>
-      <div></div>
-      <label class="field"><span>Precio efectivo (USD)</span><input id="m-pre" type="number" step="0.01" min="0" value="${esFlete?0:f.precioUSD}" ${esFlete?'disabled':''}></label>
-      <label class="field"><span>Precio Bs (equiv. BCV, USD)</span><input id="m-pre-bcv" type="number" step="0.01" min="0" value="${esFlete?0:(f.precioBCV||0)}" ${esFlete?'disabled':''}></label>
+      <label class="field"><span>Precio efectivo (USD)</span><input id="m-pre" type="text" inputmode="decimal" data-numeric="decimal" value="${esFlete?0:f.precioUSD}" ${esFlete?'disabled':''}></label>
+      <label class="field"><span>Precio Bs (equiv. BCV, USD)</span><input id="m-pre-bcv" type="text" inputmode="decimal" data-numeric="decimal" value="${esFlete?0:(f.precioBCV||'')}" ${esFlete?'disabled':''}></label>
       <div id="m-flete-note" class="muted" style="grid-column:1/3;font-size:12px;${esFlete?'':'display:none'}">El precio de un flete siempre se ingresa manualmente al momento de facturar (efectivo y Bs por separado). Costo, stock y precios fijos no aplican.</div>
     </div>`,()=>{
       const cod=$('#m-cod').value.trim(),nom=$('#m-nom').value.trim();
@@ -646,20 +872,22 @@ function openProducto(p){
       if(!cod) errs.push('El código es obligatorio.');
       else if(state.productos.some(x=>x.codigo.toLowerCase()===cod.toLowerCase()&&(!p||x.id!==p.id))) errs.push('Ya existe un producto con ese código.');
       if(!nom) errs.push('El nombre es obligatorio.');
-      let stock=0,stockMin=0,costo=0,precioUsd=0,precioBcv=0;
+      let cat='',unidad='und',stock=0,stockMin=0,costo=0,precioUsd=0,precioBcv=0;
       if(tipo!=='flete'){
+        cat=$('#m-cat').value; unidad=$('#m-und').value;
         stock=Number($('#m-stk').value); stockMin=Number($('#m-min').value);
         costo=Number($('#m-cos').value); precioUsd=Number($('#m-pre').value); precioBcv=Number($('#m-pre-bcv').value);
-        if(!(stock>=0)) errs.push('La existencia no puede ser negativa.');
-        if(!(stockMin>=0)) errs.push('El stock mínimo no puede ser negativo.');
-        if(!(costo>=0)) errs.push('El costo no puede ser negativo.');
+        if(!cat) errs.push('Selecciona una categoría.');
+        if(!(stock>0)) errs.push('La existencia no puede quedar vacía ni ser 0.');
+        if(!(stockMin>0)) errs.push('El stock mínimo no puede quedar vacío ni ser 0.');
+        if(!(costo>0)) errs.push('El costo no puede quedar vacío ni ser 0.');
         if(!(precioUsd>0)) errs.push('El precio efectivo (USD) debe ser mayor a 0.');
         if(!(precioBcv>0)) errs.push('El precio Bs (BCV) debe ser mayor a 0.');
       }
       if(errs.length){ $('#m-err').innerHTML=`<div class="err">${errs.map(esc).join('<br>')}</div>`; return false; }
       const data=tipo==='flete'
-        ?{codigo:cod,nombre:nom,categoria:'Fletes',tipo,stock:null,stockMin:null,costoUSD:0,precioUSD:0,precioBCV:0}
-        :{codigo:cod,nombre:nom,categoria:$('#m-cat').value,tipo,stock,stockMin,costoUSD:costo,precioUSD:precioUsd,precioBCV:precioBcv};
+        ?{codigo:cod,nombre:nom,categoria:'Fletes',tipo,unidad:'und',stock:null,stockMin:null,costoUSD:0,precioUSD:0,precioBCV:0}
+        :{codigo:cod,nombre:nom,categoria:cat,tipo,unidad,stock,stockMin,costoUSD:costo,precioUSD:precioUsd,precioBCV:precioBcv};
       const esNuevo=!p;
       if(p){Object.assign(p,data);}else{state.productos.push({id:uid(),...data});}
       closeModal();$('#inv-tbody').innerHTML=invRows();wireInvRows();
@@ -670,7 +898,7 @@ function openProducto(p){
   const toggleFlete=()=>{
     const isF=tipoSel.value==='flete';
     ['#m-stk','#m-min','#m-cos','#m-pre','#m-pre-bcv'].forEach(sel=>{$(sel).disabled=isF;if(isF)$(sel).value=0;});
-    $('#m-cat').disabled=isF;
+    $('#m-cat').disabled=isF; $('#m-und').disabled=isF;
     $('#m-flete-note').style.display=isF?'':'none';
   };
   tipoSel.onchange=toggleFlete;
@@ -902,7 +1130,8 @@ function facturar(){
   const dg=state.facMetodo==='Efectivo (USD)'?(Number(state.facDescGlobal)||0):0;
   const totalUSD=sub*(1-dg/100);
   const numero='NE-'+String(state.notas.length+1).padStart(5,'0');
-  const nota={id:uid(),numero,fecha:todayStr(),ts:Date.now(),clienteId:cl.id,clienteNombre:cl.nombre,items:state.cart.map(i=>({...i})),descGlobal:dg,subtotalUSD:sub,tasa:state.config.tasaBCV,totalUSD,metodo:state.facMetodo,referencia:state.facRef,moneda:esDivisa?'USD':'BS'};
+  const cajero=state.usuarios.find(u=>u.id===state.currentUserId);
+  const nota={id:uid(),numero,fecha:todayStr(),ts:Date.now(),clienteId:cl.id,clienteNombre:cl.nombre,items:state.cart.map(i=>({...i})),descGlobal:dg,subtotalUSD:sub,tasa:state.config.tasaBCV,totalUSD,metodo:state.facMetodo,referencia:state.facRef,moneda:esDivisa?'USD':'BS',cajeroId:cajero?cajero.id:'',cajeroNombre:cajero?cajero.nombre:''};
   state.cart.forEach(i=>{if(i.tipo==='flete')return;const p=state.productos.find(x=>x.id===i.productoId);if(p&&p.stock!=null)p.stock-=i.cantidad;});
   state.notas.push(nota);
   generarNotaPDF(nota,cl);
@@ -1100,7 +1329,7 @@ function renderReportes(c){
     </div>
     <div class="grid g4">
       <div class="stat green"><div class="l">Ventas totales</div><div class="v tnum">${fmtUSD(s.ventasTotal)}</div><div class="s">${fmtBs(s.ventasTotal*tasa)} · ${s.notas.length} nota(s)</div></div>
-      <div class="stat amber"><div class="l">Ventas de fletes</div><div class="v tnum">${fmtUSD(s.ventasFlete)}</div><div class="s">${fmtBs(s.ventasFlete*tasa)} · ${s.itemsFlete} flete(s)</div></div>
+      <div class="stat info"><div class="l">Ventas de fletes</div><div class="v tnum">${fmtUSD(s.ventasFlete)}</div><div class="s">${fmtBs(s.ventasFlete*tasa)} · ${s.itemsFlete} flete(s)</div></div>
       <div class="stat"><div class="l">Costo de mercancía vendida</div><div class="v tnum">${fmtUSD(s.costoTotal)}</div><div class="s">${fmtBs(s.costoTotal*tasa)}</div></div>
       <div class="stat ${s.utilidad>=0?'green':'red'}"><div class="l">Utilidad</div><div class="v tnum">${fmtUSD(s.utilidad)}</div><div class="s">${fmtBs(s.utilidad*tasa)} · margen ${s.ventasTotal>0?Math.round(s.utilidad/s.ventasTotal*100):0}%</div></div>
     </div>
@@ -1131,9 +1360,8 @@ function cierreRangoDia(fechaISO){
   const end=new Date(y,m-1,d,23,59,59,999);
   return {start,end};
 }
-function cierreStats(){
-  const {start,end}=cierreRangoDia(state.cierreFecha);
-  const notas=state.notas.filter(n=>n.ts>=start.getTime()&&n.ts<=end.getTime());
+function fmtDateTime(ts){ return new Date(ts).toLocaleString('es-VE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function agregarNotas(notas){
   const divisas={notas:[],porMetodo:{},total:0,fleteTotal:0,fleteCount:0};
   const bs={notas:[],porMetodo:{},total:0,fleteTotal:0,fleteCount:0};
   let costoTotal=0, ventasTotal=0;
@@ -1152,31 +1380,21 @@ function cierreStats(){
   });
   return {notas,divisas,bs,costoTotal,ventasTotal,utilidad:ventasTotal-costoTotal};
 }
-function cierreNotasRows(notas){
-  if(!notas.length) return '<tr><td colspan="6" class="empty">No hay ventas registradas en la fecha seleccionada.</td></tr>';
-  return [...notas].reverse().map(n=>{
-    const hora=new Date(n.ts).toLocaleTimeString('es-VE',{hour:'2-digit',minute:'2-digit'});
-    return `<tr>
-      <td class="mono" style="font-weight:600;color:var(--navy-700)">${n.numero}</td>
-      <td style="font-weight:600;color:var(--slate-700)">${esc(n.clienteNombre)}</td>
-      <td class="hide-sm muted">${hora}</td>
-      <td style="text-align:center"><span class="badge ${n.moneda==='BS'?'navy':'green'}">${n.moneda==='BS'?'Bs BCV':'Divisas'}</span></td>
-      <td class="hide-sm muted">${n.metodo||'—'}</td>
-      <td>${notaTotalHTML(n)}</td>
-    </tr>`;
-  }).join('');
-}
-function generarCierrePDF(s){
-  if(!s.notas.length){showToast('No hay ventas registradas en la fecha seleccionada.','error');return;}
+function generarCierrePDF(s,opts){
+  opts=opts||{};
+  const titulo=opts.titulo||'CIERRE DE CAJA';
+  const fechaTxt=opts.fecha||todayStr();
+  const filename=opts.filename||('Cierre-'+toISODate(new Date()));
+  if(!s.notas.length){showToast('No hay ventas registradas para este cierre.','error');return;}
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({unit:'pt',format:'a4'});
   const W=doc.internal.pageSize.getWidth();
   const navy=[16,39,66];
   const tasa=state.config.tasaBCV;
   doc.setTextColor(...navy); doc.setFont('helvetica','bold'); doc.setFontSize(16);
-  doc.text('CIERRE DE CAJA',40,50);
+  doc.text(titulo,40,50);
   doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120,120,120);
-  doc.text('Fecha: '+fmtDateObj(new Date(state.cierreFecha+'T00:00:00'))+' · Generado: '+todayStr(),40,66);
+  doc.text((opts.subtitulo?opts.subtitulo+' · ':'')+'Fecha: '+fechaTxt+' · Generado: '+todayStr(),40,66);
   doc.setDrawColor(...navy); doc.setLineWidth(1.2); doc.line(40,78,W-40,78);
 
   doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(...navy);
@@ -1207,60 +1425,178 @@ function generarCierrePDF(s){
   doc.text('Utilidad del día: '+fmtUSD(s.utilidad)+' ('+fmtBs(s.utilidad*tasa)+')',40,y+32);
   doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(140,140,140);
   doc.text('Tasa BCV aplicada: '+fmtBs(tasa)+' / $ · '+s.notas.length+' nota(s) en total',40,y+50);
-  doc.save('Cierre-'+state.cierreFecha+'.pdf');
-  logActividad('Descargó cierre de caja',state.cierreFecha);
+  doc.save(filename+'.pdf');
+  logActividad(titulo==='CIERRE GENERAL'?'Descargó cierre general':'Descargó cierre de caja',fechaTxt);
   showToast('Cierre descargado correctamente.');
 }
-function renderCierres(c){
-  const s=cierreStats();
-  const tasa=state.config.tasaBCV;
-  const metodoRows=(grupo,fmt)=>{
-    const metodos=Object.keys(grupo.porMetodo);
-    if(!metodos.length) return '<div class="empty">Sin ventas en este grupo.</div>';
-    return metodos.map(m=>`<div class="row between" style="padding:8px 0;border-top:1px solid var(--slate-50)">
-      <span style="font-size:13px;color:var(--slate-700)">${esc(m)}</span>
-      <span class="tnum" style="font-weight:600">${fmt(grupo.porMetodo[m])}</span>
-    </div>`).join('');
+function metodoRowsHTML(grupo,fmt){
+  const metodos=Object.keys(grupo.porMetodo);
+  if(!metodos.length) return '<div class="empty">Sin ventas en este grupo.</div>';
+  return metodos.map(m=>`<div class="row between" style="padding:8px 0;border-top:1px solid var(--slate-50)">
+    <span style="font-size:13px;color:var(--slate-700)">${esc(m)}</span>
+    <span class="tnum" style="font-weight:600">${fmt(grupo.porMetodo[m])}</span>
+  </div>`).join('');
+}
+function divisasBsCardsHTML(s,tasa){
+  return `<div class="grid g2">
+    <div class="card">
+      <div class="card-h"><h3>Efectivo Divisas (USD)</h3><span class="badge green">${s.divisas.notas.length} venta(s)</span></div>
+      <div style="padding:16px 20px">
+        ${metodoRowsHTML(s.divisas,fmtUSD)}
+        <div class="row between" style="padding-top:12px;margin-top:8px;border-top:2px solid var(--slate-100)"><b>Total divisas</b><b class="tnum">${fmtUSD(s.divisas.total)}</b></div>
+        <div class="muted" style="font-size:12px;margin-top:6px">Fletes: ${s.divisas.fleteCount} · ${fmtUSD(s.divisas.fleteTotal)}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Bolívares (Bs, cambio BCV)</h3><span class="badge navy">${s.bs.notas.length} venta(s)</span></div>
+      <div style="padding:16px 20px">
+        ${metodoRowsHTML(s.bs,v=>fmtBs(v*tasa))}
+        <div class="row between" style="padding-top:12px;margin-top:8px;border-top:2px solid var(--slate-100)"><b>Total Bs</b><b class="tnum">${fmtBs(s.bs.total*tasa)}</b></div>
+        <div class="muted" style="font-size:12px;margin-top:6px">Fletes: ${s.bs.fleteCount} · ${fmtBs(s.bs.fleteTotal*tasa)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- Mi cierre de caja (por turno de cajero) ---------------- */
+function miCierrePendiente(userId){
+  const propios=state.cierres.filter(c=>c.cajeroId===userId);
+  const ultimo=propios.length?propios.reduce((a,b)=>a.hasta>b.hasta?a:b):null;
+  const desde=ultimo?ultimo.hasta:null;
+  const notas=state.notas.filter(n=>n.cajeroId===userId && (desde===null||n.ts>desde));
+  return {desde,stats:agregarNotas(notas)};
+}
+function renderMiCierre(c){
+  const user=state.usuarios.find(x=>x.id===state.currentUserId);
+  const pend=miCierrePendiente(user.id);
+  const s=pend.stats;
+  const misCierres=[...state.cierres].filter(x=>x.cajeroId===user.id).sort((a,b)=>b.hasta-a.hasta);
+  c.innerHTML=`<div class="stack">
+    <div class="card" style="padding:20px">
+      <div class="section-title">Turno pendiente por cerrar</div>
+      <div class="section-sub">${pend.desde?`Desde tu último cierre (${fmtDateTime(pend.desde)}) hasta ahora.`:'Desde tu primera venta hasta ahora (todavía no has cerrado caja).'}</div>
+      <div class="grid g4">
+        <div class="stat green"><div class="l">Ventas del turno</div><div class="v tnum">${fmtUSD(s.ventasTotal)}</div><div class="s">${s.notas.length} nota(s)</div></div>
+        <div class="stat"><div class="l">Costo de mercancía</div><div class="v tnum">${fmtUSD(s.costoTotal)}</div></div>
+        <div class="stat ${s.utilidad>=0?'green':'red'}"><div class="l">Utilidad</div><div class="v tnum">${fmtUSD(s.utilidad)}</div></div>
+        <div class="stat info"><div class="l">Divisas / Bs</div><div class="v tnum" style="font-size:16px">${fmtUSD(s.divisas.total)} · ${fmtUSD(s.bs.total)}</div></div>
+      </div>
+      <button class="btn btn-accent" id="mi-cierre-btn" style="margin-top:16px" ${!s.notas.length?'disabled':''}>Cerrar mi caja</button>
+      ${!s.notas.length?'<span class="muted" style="font-size:12px;margin-left:8px">No tienes ventas nuevas desde tu último cierre.</span>':''}
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Mis cierres anteriores</h3></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Fecha</th><th class="hide-sm">Desde</th><th class="hide-sm">Hasta</th><th style="text-align:center">Notas</th><th style="text-align:right">Utilidad</th><th></th></tr></thead>
+        <tbody>${misCierres.length?misCierres.map(cl=>`<tr>
+          <td style="font-weight:600;color:var(--slate-700)">${fmtDateObj(new Date(cl.hasta))}</td>
+          <td class="hide-sm muted">${cl.desde?fmtDateTime(cl.desde):'—'}</td>
+          <td class="hide-sm muted">${new Date(cl.hasta).toLocaleTimeString('es-VE',{hour:'2-digit',minute:'2-digit'})}</td>
+          <td style="text-align:center">${cl.notasCount}</td>
+          <td style="text-align:right" class="tnum">${fmtUSD(cl.utilidad)}</td>
+          <td style="text-align:right"><button class="iconbtn" title="Descargar PDF" data-cierre-pdf="${cl.id}">${ICON.download}</button></td>
+        </tr>`).join(''):'<tr><td colspan="6" class="empty">Todavía no has cerrado tu caja.</td></tr>'}</tbody>
+      </table></div>
+    </div>
+  </div>`;
+  const btn=$('#mi-cierre-btn');
+  if(btn) btn.onclick=()=>{
+    confirmModal({title:'Cerrar mi caja',message:`Se generará tu cierre de turno con las ${s.notas.length} nota(s) pendientes. Esta acción no se puede deshacer.`,confirmLabel:'Cerrar caja',onConfirm:()=>{
+      const hasta=Date.now();
+      const cierre={id:uid(),cajeroId:user.id,cajeroNombre:user.nombre,desde:pend.desde,hasta,notasIds:s.notas.map(n=>n.id),ventasTotal:s.ventasTotal,costoTotal:s.costoTotal,utilidad:s.utilidad,divisaTotal:s.divisas.total,bsTotal:s.bs.total,tasa:state.config.tasaBCV,notasCount:s.notas.length};
+      state.cierres.push(cierre);
+      generarCierrePDF(s,{titulo:'CIERRE DE CAJERO',subtitulo:'Cajero: '+user.nombre,fecha:fmtDateObj(new Date(hasta)),filename:'Cierre-'+user.usuario+'-'+toISODate(new Date(hasta))});
+      logActividad('Cerró su caja',s.notas.length+' nota(s) · utilidad '+fmtUSD(s.utilidad));
+      showToast('Cierre de caja generado correctamente.');
+      renderMiCierre($('#content'));
+    }});
   };
+  document.querySelectorAll('[data-cierre-pdf]').forEach(b=>b.onclick=()=>{
+    const cl=state.cierres.find(x=>x.id===b.dataset.cierrePdf); if(!cl)return;
+    const notas=state.notas.filter(n=>cl.notasIds.includes(n.id));
+    generarCierrePDF(agregarNotas(notas),{titulo:'CIERRE DE CAJERO',subtitulo:'Cajero: '+cl.cajeroNombre,fecha:fmtDateObj(new Date(cl.hasta)),filename:'Cierre-'+cl.cajeroNombre.replace(/\s+/g,'')+'-'+toISODate(new Date(cl.hasta))});
+  });
+}
+
+/* ---------------- Cierre general (consolidado diario, admin/supervisor) ---------------- */
+function openCierreDetalle(cl){
+  const notas=state.notas.filter(n=>cl.notasIds.includes(n.id));
+  const s=agregarNotas(notas);
+  $('#modal-root').innerHTML=`
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal" style="max-width:560px">
+      <div class="modal-h"><h3>Cierre de ${esc(cl.cajeroNombre)}</h3><button class="modal-x" type="button" id="cierre-modal-x">&times;</button></div>
+      <div class="modal-b">
+        <div class="section-sub" style="margin:0 0 16px">${cl.desde?'Desde '+fmtDateTime(cl.desde):'Desde el inicio'} hasta ${fmtDateTime(cl.hasta)}</div>
+        <div class="grid g2" style="gap:12px">
+          <div class="stat green"><div class="l">Ventas</div><div class="v tnum" style="font-size:18px">${fmtUSD(s.ventasTotal)}</div><div class="s">${s.notas.length} nota(s)</div></div>
+          <div class="stat"><div class="l">Costo</div><div class="v tnum" style="font-size:18px">${fmtUSD(s.costoTotal)}</div></div>
+          <div class="stat ${s.utilidad>=0?'green':'red'}"><div class="l">Utilidad</div><div class="v tnum" style="font-size:18px">${fmtUSD(s.utilidad)}</div></div>
+          <div class="stat info"><div class="l">Divisas / Bs</div><div class="v tnum" style="font-size:16px">${fmtUSD(s.divisas.total)} · ${fmtUSD(s.bs.total)}</div></div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="cierre-modal-cerrar">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="cierre-modal-pdf"><span class="ic">${ICON.download}</span>Descargar PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  const close=()=>{ $('#modal-root').innerHTML=''; };
+  $('#cierre-modal-x').onclick=close; $('#cierre-modal-cerrar').onclick=close;
+  $('#cierre-modal-pdf').onclick=()=>generarCierrePDF(s,{titulo:'CIERRE DE CAJERO',subtitulo:'Cajero: '+cl.cajeroNombre,fecha:fmtDateObj(new Date(cl.hasta)),filename:'Cierre-'+cl.cajeroNombre.replace(/\s+/g,'')+'-'+toISODate(new Date(cl.hasta))});
+}
+function renderCierreGeneral(c){
+  const fecha=state.cierreFecha;
+  const {start,end}=cierreRangoDia(fecha);
+  const cierresDelDia=state.cierres.filter(cl=>cl.hasta>=start.getTime()&&cl.hasta<=end.getTime());
+  const notasIds=new Set(); cierresDelDia.forEach(cl=>cl.notasIds.forEach(id=>notasIds.add(id)));
+  const notas=state.notas.filter(n=>notasIds.has(n.id));
+  const s=agregarNotas(notas);
+  const tasa=state.config.tasaBCV;
+  const cajerosDelDia=new Set(state.notas.filter(n=>n.ts>=start.getTime()&&n.ts<=end.getTime()&&n.cajeroId).map(n=>n.cajeroId));
+  const cajerosCerrados=new Set(cierresDelDia.map(cl=>cl.cajeroId));
+  const pendientes=[...cajerosDelDia].filter(id=>!cajerosCerrados.has(id)).map(id=>{ const u=state.usuarios.find(x=>x.id===id); return u?u.nombre:'—'; });
   c.innerHTML=`<div class="stack">
     <div class="row between" style="flex-wrap:wrap;gap:12px;align-items:flex-end">
-      <label class="field" style="max-width:220px"><span>Fecha del cierre</span><input class="input" type="date" id="cie-fecha" value="${state.cierreFecha}"></label>
-      <button class="btn btn-accent" id="cie-pdf"><span class="ic">${ICON.download}</span>Descargar cierre (PDF)</button>
+      <label class="field" style="max-width:220px"><span>Fecha del cierre</span><input class="input" type="date" id="cie-fecha" value="${fecha}"></label>
+      <button class="btn btn-accent" id="cie-pdf"><span class="ic">${ICON.download}</span>Descargar cierre general (PDF)</button>
     </div>
-    <div class="grid g2">
-      <div class="card">
-        <div class="card-h"><h3>Efectivo Divisas (USD)</h3><span class="badge green">${s.divisas.notas.length} venta(s)</span></div>
-        <div style="padding:16px 20px">
-          ${metodoRows(s.divisas,fmtUSD)}
-          <div class="row between" style="padding-top:12px;margin-top:8px;border-top:2px solid var(--slate-100)"><b>Total divisas</b><b class="tnum">${fmtUSD(s.divisas.total)}</b></div>
-          <div class="muted" style="font-size:12px;margin-top:6px">Fletes: ${s.divisas.fleteCount} · ${fmtUSD(s.divisas.fleteTotal)}</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-h"><h3>Bolívares (Bs, cambio BCV)</h3><span class="badge navy">${s.bs.notas.length} venta(s)</span></div>
-        <div style="padding:16px 20px">
-          ${metodoRows(s.bs,v=>fmtBs(v*tasa))}
-          <div class="row between" style="padding-top:12px;margin-top:8px;border-top:2px solid var(--slate-100)"><b>Total Bs</b><b class="tnum">${fmtBs(s.bs.total*tasa)}</b></div>
-          <div class="muted" style="font-size:12px;margin-top:6px">Fletes: ${s.bs.fleteCount} · ${fmtBs(s.bs.fleteTotal*tasa)}</div>
-        </div>
-      </div>
-    </div>
+    ${pendientes.length?`<div class="card" style="padding:14px 20px;border-left:4px solid var(--red)">
+      <b style="color:var(--red)">Cajeros sin cerrar su caja este día:</b>
+      <span class="muted">${pendientes.map(esc).join(', ')}</span>
+    </div>`:''}
     <div class="grid g4">
       <div class="stat green"><div class="l">Ventas totales del día</div><div class="v tnum">${fmtUSD(s.ventasTotal)}</div><div class="s">${s.notas.length} nota(s) · equiv. USD</div></div>
       <div class="stat"><div class="l">Costo de mercancía</div><div class="v tnum">${fmtUSD(s.costoTotal)}</div><div class="s">${fmtBs(s.costoTotal*tasa)}</div></div>
       <div class="stat ${s.utilidad>=0?'green':'red'}"><div class="l">Utilidad del día</div><div class="v tnum">${fmtUSD(s.utilidad)}</div><div class="s">${fmtBs(s.utilidad*tasa)}</div></div>
-      <div class="stat amber"><div class="l">Tasa BCV usada</div><div class="v tnum">${fmtBs(tasa)}</div><div class="s">por dólar</div></div>
+      <div class="stat info"><div class="l">Tasa BCV usada</div><div class="v tnum">${fmtBs(tasa)}</div><div class="s">por dólar</div></div>
     </div>
+    ${divisasBsCardsHTML(s,tasa)}
     <div class="card">
-      <div class="card-h"><h3>Detalle de notas del día</h3></div>
+      <div class="card-h"><h3>Cierres de cajero incluidos</h3><span class="badge slate">${cierresDelDia.length}</span></div>
       <div class="tablewrap"><table>
-        <thead><tr><th>N° Nota</th><th>Cliente</th><th class="hide-sm">Hora</th><th style="text-align:center">Moneda</th><th class="hide-sm">Método</th><th style="text-align:right">Total</th></tr></thead>
-        <tbody>${cierreNotasRows(s.notas)}</tbody>
+        <thead><tr><th>Cajero</th><th>Desde</th><th>Hasta</th><th style="text-align:center">Notas</th><th style="text-align:right">Utilidad</th><th></th></tr></thead>
+        <tbody>${cierresDelDia.length?cierresDelDia.map(cl=>`<tr>
+          <td style="font-weight:600;color:var(--slate-700)">${esc(cl.cajeroNombre)}</td>
+          <td class="hide-sm muted">${cl.desde?fmtDateTime(cl.desde):'—'}</td>
+          <td class="hide-sm muted">${fmtDateTime(cl.hasta)}</td>
+          <td style="text-align:center">${cl.notasCount}</td>
+          <td style="text-align:right" class="tnum">${fmtUSD(cl.utilidad)}</td>
+          <td style="text-align:right;white-space:nowrap"><button class="iconbtn view" title="Ver cierre" data-cierre-ver="${cl.id}">${ICON.view}</button><button class="iconbtn" title="Descargar PDF" data-cierre-pdf="${cl.id}">${ICON.download}</button></td>
+        </tr>`).join(''):'<tr><td colspan="6" class="empty">Ningún cajero ha cerrado su caja en esta fecha todavía.</td></tr>'}</tbody>
       </table></div>
     </div>
   </div>`;
-  $('#cie-fecha').onchange=e=>{state.cierreFecha=e.target.value;renderCierres(c);};
-  $('#cie-pdf').onclick=()=>generarCierrePDF(s);
+  $('#cie-fecha').onchange=e=>{state.cierreFecha=e.target.value;renderCierreGeneral(c);};
+  $('#cie-pdf').onclick=()=>generarCierrePDF(s,{titulo:'CIERRE GENERAL',fecha:fmtDateObj(new Date(fecha+'T00:00:00')),filename:'Cierre-general-'+fecha});
+  document.querySelectorAll('[data-cierre-ver]').forEach(b=>b.onclick=()=>{
+    const cl=state.cierres.find(x=>x.id===b.dataset.cierreVer); if(cl) openCierreDetalle(cl);
+  });
+  document.querySelectorAll('[data-cierre-pdf]').forEach(b=>b.onclick=()=>{
+    const cl=state.cierres.find(x=>x.id===b.dataset.cierrePdf); if(!cl)return;
+    const ns=state.notas.filter(n=>cl.notasIds.includes(n.id));
+    generarCierrePDF(agregarNotas(ns),{titulo:'CIERRE DE CAJERO',subtitulo:'Cajero: '+cl.cajeroNombre,fecha:fmtDateObj(new Date(cl.hasta)),filename:'Cierre-'+cl.cajeroNombre.replace(/\s+/g,'')+'-'+toISODate(new Date(cl.hasta))});
+  });
 }
 
 /* ================================================================ */
@@ -1281,7 +1617,7 @@ function notasRows(){
     <td class="hide-sm muted" style="text-align:center">${n.items.length}</td>
     <td style="text-align:center"><span class="badge ${n.moneda==='BS'?'navy':'green'}">${n.moneda==='BS'?'Bs BCV':'Divisas'}</span></td>
     <td>${notaTotalHTML(n)}</td>
-    <td style="text-align:right"><button class="iconbtn" title="Descargar PDF" data-dl="${n.id}">${ICON.download}</button></td>
+    <td style="text-align:right;white-space:nowrap"><button class="iconbtn view" title="Ver nota" data-view="${n.id}">${ICON.view}</button><button class="iconbtn" title="Descargar PDF" data-dl="${n.id}">${ICON.download}</button></td>
   </tr>`).join('');
 }
 function renderNotas(c){
@@ -1296,7 +1632,47 @@ function renderNotas(c){
   wireClearButtons();
   wireNotas();
 }
+function openNotaDetalle(n){
+  const cl=state.clientes.find(c=>c.id===n.clienteId)||{nombre:n.clienteNombre,doc:'—'};
+  const esUSD=n.moneda!=='BS';
+  const fmt=esUSD?fmtUSD:(v=>fmtBs(v*n.tasa));
+  const rows=n.items.map(i=>{
+    const precio=esUSD?i.precioUSD:i.precioBCV;
+    return `<tr><td class="mono muted">${esc(i.codigo)}</td><td>${esc(i.nombre)}</td><td style="text-align:center">${i.cantidad}</td><td style="text-align:right">${fmt(precio)}</td><td style="text-align:right">${fmt(precio*i.cantidad)}</td></tr>`;
+  }).join('');
+  $('#modal-root').innerHTML=`
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal" style="max-width:640px">
+      <div class="modal-h"><h3>Nota ${esc(n.numero)}</h3><button class="modal-x" type="button" id="nota-modal-x">&times;</button></div>
+      <div class="modal-b">
+        <div class="grid g2" style="gap:14px 20px;margin-bottom:18px">
+          <div><span class="muted" style="font-size:12px">Cliente</span><div style="font-weight:600">${esc(cl.nombre)}</div></div>
+          <div><span class="muted" style="font-size:12px">Documento</span><div>${esc(cl.doc)}</div></div>
+          <div><span class="muted" style="font-size:12px">Fecha</span><div>${esc(n.fecha)}</div></div>
+          <div><span class="muted" style="font-size:12px">Método de pago</span><div>${esc(n.metodo||'—')}${n.referencia?' · '+esc(n.referencia):''}</div></div>
+        </div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Código</th><th>Producto</th><th style="text-align:center">Cant.</th><th style="text-align:right">P. Unit</th><th style="text-align:right">Total</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>
+        <div class="row between" style="padding-top:14px;margin-top:6px;border-top:1px solid var(--slate-100)">
+          <b>Total</b><b class="tnum">${fmt(n.totalUSD)}</b>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="nota-modal-cerrar">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="nota-modal-pdf"><span class="ic">${ICON.download}</span>Descargar PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  const close=()=>{ $('#modal-root').innerHTML=''; };
+  $('#nota-modal-x').onclick=close; $('#nota-modal-cerrar').onclick=close;
+  $('#nota-modal-pdf').onclick=()=>{ generarNotaPDF(n,cl); showToast('Descargando nota '+n.numero+'…','info'); };
+}
 function wireNotas(){
+  document.querySelectorAll('#nt-tbody [data-view]').forEach(b=>b.onclick=()=>{
+    const n=state.notas.find(x=>x.id===b.dataset.view); if(n) openNotaDetalle(n);
+  });
   document.querySelectorAll('#nt-tbody [data-dl]').forEach(b=>b.onclick=()=>{
     const n=state.notas.find(x=>x.id===b.dataset.dl);
     const cl=state.clientes.find(c=>c.id===n.clienteId)||{nombre:n.clienteNombre,doc:'—'};
@@ -1316,7 +1692,7 @@ function cliRows(){
     <td class="mono muted">${esc(c.doc)}</td>
     <td class="hide-sm muted">${esc(c.telefono)}</td>
     <td class="hide-sm muted">${esc(c.direccion)}</td>
-    <td style="text-align:right;white-space:nowrap"><button class="iconbtn" title="Editar" data-edit="${c.id}">${ICON.edit}</button><button class="iconbtn danger" title="Eliminar" data-del="${c.id}">${ICON.trash}</button></td>
+    <td style="text-align:right;white-space:nowrap"><button class="iconbtn edit" title="Editar" data-edit="${c.id}">${ICON.edit}</button><button class="iconbtn danger" title="Eliminar" data-del="${c.id}">${ICON.trash}</button></td>
   </tr>`).join('');
 }
 function renderClientes(c){
@@ -1340,6 +1716,8 @@ function wireCli(){
   document.querySelectorAll('#cli-tbody [data-del]').forEach(b=>b.onclick=()=>{
     const cli=state.clientes.find(c=>c.id===b.dataset.del); if(!cli)return;
     confirmModal({title:'Eliminar cliente',message:'¿Eliminar a "'+cli.nombre+'"? Esta acción no se puede deshacer.',confirmLabel:'Eliminar',onConfirm:()=>{
+      const tieneNotas=state.notas.some(n=>n.clienteId===cli.id);
+      if(tieneNotas){ showToast('No se puede eliminar a "'+cli.nombre+'" porque tiene notas de entrega asociadas.','error'); return; }
       state.clientes=state.clientes.filter(x=>x.id!==cli.id);
       $('#cli-tbody').innerHTML=cliRows(); wireCli();
       logActividad('Eliminó cliente',cli.nombre+' ('+cli.doc+')');
@@ -1394,9 +1772,9 @@ function usrRows(){
   return state.usuarios.map(u=>`<tr>
     <td class="mono muted">${esc(u.usuario)}</td>
     <td style="font-weight:600;color:var(--slate-700)"><button class="link" data-perfil="${u.id}" style="font-weight:600;color:var(--slate-700)">${esc(u.nombre)}</button></td>
-    <td><span class="badge navy">${u.rol}</span></td>
+    <td><span class="badge ${ROLE_BADGE[u.rol]||'slate'}">${u.rol}</span></td>
     <td style="text-align:center"><span class="badge ${u.activo?'green':'slate'}">${u.activo?'Activo':'Inactivo'}</span></td>
-    <td style="text-align:right;white-space:nowrap"><button class="iconbtn" title="Ver perfil" data-perfil="${u.id}">${ICON.user}</button><button class="iconbtn" title="Editar" data-edit="${u.id}">${ICON.edit}</button><button class="iconbtn danger" title="Eliminar" data-del="${u.id}">${ICON.trash}</button></td>
+    <td style="text-align:right;white-space:nowrap"><button class="iconbtn view" title="Ver perfil" data-perfil="${u.id}">${ICON.user}</button><button class="iconbtn edit" title="Editar" data-edit="${u.id}">${ICON.edit}</button><button class="iconbtn danger" title="Eliminar" data-del="${u.id}">${ICON.trash}</button></td>
   </tr>`).join('');
 }
 function renderUsuarios(c){
@@ -1426,7 +1804,7 @@ function wireUsr(){
   });
 }
 function openUsuario(u){
-  const f=u||{usuario:'',nombre:'',rol:ROLES[1],activo:true};
+  const f=u||{usuario:'',nombre:'',rol:ROLES[1],telefono:'',activo:true};
   openModal(u?'Editar usuario':'Nuevo usuario',`
     <div id="u-err"></div>
     <div class="stack" style="gap:14px">
@@ -1435,10 +1813,12 @@ function openUsuario(u){
         <label class="field"><span>Rol</span><select id="u-rol">${ROLES.map(r=>`<option ${f.rol===r?'selected':''}>${r}</option>`).join('')}</select></label>
       </div>
       <label class="field"><span>Nombre completo</span><input id="u-nom" value="${esc(f.nombre)}"></label>
+      <label class="field"><span>Teléfono</span><input id="u-tel" type="text" value="${esc(f.telefono)}" placeholder="0412-1234567"></label>
       <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--slate-600)"><input id="u-act" type="checkbox" ${f.activo?'checked':''}> Usuario activo</label>
     </div>`,()=>{
       const us=$('#u-usr').value.trim();
       const nom=$('#u-nom').value.trim();
+      const tel=$('#u-tel').value.trim();
       const activo=$('#u-act').checked;
       const errs=[];
       if(!us) errs.push('El usuario es obligatorio.');
@@ -1447,7 +1827,7 @@ function openUsuario(u){
       if(!nom) errs.push('El nombre completo es obligatorio.');
       if(u&&u.id===state.currentUserId&&!activo) errs.push('No puedes desactivar tu propio usuario mientras tienes la sesión activa.');
       if(errs.length){ $('#u-err').innerHTML=`<div class="err">${errs.map(esc).join('<br>')}</div>`; return false; }
-      const data={usuario:us,nombre:nom,rol:$('#u-rol').value,activo};
+      const data={usuario:us,nombre:nom,rol:$('#u-rol').value,telefono:tel,activo};
       const esNuevo=!u;
       if(u)Object.assign(u,data);else state.usuarios.push({id:uid(),...data});
       closeModal();$('#usr-tbody').innerHTML=usrRows();wireUsr();
@@ -1471,7 +1851,7 @@ function renderPerfilUsuario(c){
         <div class="avatar" style="width:56px;height:56px;font-size:18px">${initials(u.nombre)}</div>
         <div>
           <div style="font-size:18px;font-weight:800;color:var(--slate-800)">${esc(u.nombre)}${u.id===state.currentUserId?' <span class="badge navy">Tú</span>':''}</div>
-          <div class="muted" style="font-size:13px">@${esc(u.usuario)} · <span class="badge navy">${u.rol}</span> · <span class="badge ${u.activo?'green':'slate'}">${u.activo?'Activo':'Inactivo'}</span></div>
+          <div class="muted" style="font-size:13px">@${esc(u.usuario)} · <span class="badge ${ROLE_BADGE[u.rol]||'slate'}">${u.rol}</span> · <span class="badge ${u.activo?'green':'slate'}">${u.activo?'Activo':'Inactivo'}</span>${u.telefono?' · '+esc(u.telefono):''}</div>
         </div>
       </div>
     </div>
@@ -1489,52 +1869,161 @@ function renderPerfilUsuario(c){
 /* ================================================================ */
 /*  Configuración                                                   */
 /* ================================================================ */
+function fechaEfectivaBCV(d){
+  d=d||new Date();
+  const day=d.getDay();
+  if(day===0||day===6){
+    const lunes=new Date(d);
+    lunes.setDate(lunes.getDate()+(day===0?1:2));
+    return toISODate(lunes);
+  }
+  return toISODate(d);
+}
+function tasaHoyRegistrada(){
+  const eff=fechaEfectivaBCV();
+  return state.tasas.find(t=>t.fecha===eff);
+}
+function extraerTasaJSON(obj,depth){
+  depth=depth||0; if(depth>6||obj==null) return null;
+  if(typeof obj==='number') return obj>0?obj:null;
+  if(typeof obj==='object'){
+    for(const k of ['promedio','price','precio','rate','valor']){
+      if(k in obj){ const v=Number(obj[k]); if(v>0) return v; }
+    }
+    for(const k in obj){ const r=extraerTasaJSON(obj[k],depth+1); if(r) return r; }
+  }
+  return null;
+}
+async function actualizarTasaBCV(){
+  const eff=fechaEfectivaBCV();
+  if(state.tasas.find(t=>t.fecha===eff)){ showToast('Ya hay una tasa registrada para hoy.','error'); return; }
+  const btn=$('#cfg-tasa-refresh');
+  if(btn){ btn.disabled=true; btn.textContent='Actualizando…'; }
+  let tasa=null;
+  try{
+    const r=await fetch('https://pydolarve.org/api/v1/dollar?page=bcv&monitor=usd');
+    if(r.ok) tasa=extraerTasaJSON(await r.json());
+  }catch(e){}
+  if(!tasa){
+    try{
+      const r2=await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+      if(r2.ok) tasa=extraerTasaJSON(await r2.json());
+    }catch(e){}
+  }
+  let simulado=false;
+  if(!(tasa>0)){
+    tasa=Math.round((state.config.tasaBCV+(0.3+Math.random()*1.2))*100)/100;
+    simulado=true;
+  }
+  state.tasas.push({fecha:eff,tasa,origen:'AUTO'});
+  const anterior=state.config.tasaBCV;
+  state.config.tasaBCV=tasa;
+  logActividad('Actualizó tasa BCV',fmtBs(anterior)+' → '+fmtBs(tasa)+(simulado?' (simulada, sin conexión)':' (BCV)'));
+  showToast(simulado?'No se pudo contactar al BCV; se generó una tasa simulada para la demo.':'Tasa BCV actualizada correctamente desde la fuente oficial.',simulado?'info':undefined);
+  renderShell();
+}
 function renderConfig(c){
-  c.innerHTML=`<div class="stack maxw">
+  const hoyTasa=tasaHoyRegistrada();
+  const historial=[...state.tasas].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  c.innerHTML=`<div class="stack">
     <div id="cfg-err"></div>
-    <div class="grid g2">
-      <div class="card" style="padding:20px">
-        <div class="section-title">Tasa del Banco Central (BCV)</div>
-        <div class="section-sub">Bolívares por dólar. Se usa en todo el sistema y en los PDF.</div>
-        <div class="row" style="align-items:flex-end">
-          <label class="field" style="flex:1"><span>Tasa (Bs / $)</span><input class="input" id="cfg-tasa" type="number" step="0.01" min="0.01" value="${state.config.tasaBCV}"></label>
-          <button class="btn btn-primary" id="cfg-tasa-btn">Guardar</button>
+    <div class="grid" style="gap:16px;grid-template-columns:1fr 1.3fr;align-items:start">
+      <div class="stack" style="gap:16px">
+        <div class="card" style="padding:20px">
+          <div class="section-title">Tasa del dólar (BCV)</div>
+          <div class="section-sub">Si no hay internet, ajusta aquí la tasa manualmente. Se aplica a todos los montos en bolívares.</div>
+          <div style="font-size:12px;background:#fef3c7;color:#92400e;border-radius:8px;padding:10px 12px;margin-bottom:14px">
+            Los <b>sábados y domingos</b> se aplica automáticamente la tasa del <b>lunes</b> (el BCV la publica el viernes). Por eso el fin de semana y el lunes comparten la misma tasa.
+          </div>
+          ${hoyTasa?`
+          <label class="field"><span>Tasa actual (Bs por USD)</span><input class="input" type="number" value="${hoyTasa.tasa}" disabled></label>
+          <div style="font-size:12px;background:var(--navy-50);color:var(--navy-700);border-radius:8px;padding:10px 12px;margin-top:10px">
+            Ya hay una tasa registrada para hoy (${hoyTasa.origen==='AUTO'?'Automática (BCV)':'Manual'}). No se puede modificar ni actualizar hasta mañana.
+          </div>`:`
+          <label class="field"><span>Tasa actual (Bs por USD)</span><input class="input" id="cfg-tasa" type="text" inputmode="decimal" data-numeric="decimal" value="${state.config.tasaBCV}"></label>
+          <div class="row" style="gap:8px;margin-top:12px;flex-wrap:wrap">
+            <button type="button" class="btn btn-primary" id="cfg-tasa-btn">Guardar tasa</button>
+            <button type="button" class="btn btn-ghost" id="cfg-tasa-refresh">⟲ Actualizar desde BCV</button>
+          </div>`}
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>Historial de tasas</h3></div>
+          <div class="tablewrap"><table>
+            <thead><tr><th>Fecha</th><th>Tasa (Bs/USD)</th><th>Origen</th></tr></thead>
+            <tbody>${historial.length?historial.map(t=>`<tr>
+              <td>${fmtDateObj(new Date(t.fecha+'T00:00:00'))}</td>
+              <td class="tnum" style="font-weight:600">${t.tasa.toFixed(2)}</td>
+              <td><span class="badge ${t.origen==='AUTO'?'info':'amber'}">${t.origen==='AUTO'?'Automática (BCV)':'Manual'}</span></td>
+            </tr>`).join(''):'<tr><td colspan="3" class="empty">Sin registros todavía.</td></tr>'}</tbody>
+          </table></div>
         </div>
       </div>
       <div class="card" style="padding:20px">
-        <div class="section-title">Ajuste masivo de precios</div>
-        <div class="section-sub">Sube o baja precios (efectivo y Bs BCV) por porcentaje, a todos o por categoría.</div>
-        <div class="grid g2" style="gap:12px">
-          <label class="field"><span>Acción</span><select class="input" id="cfg-tipo"><option value="aumentar">Aumentar (+)</option><option value="disminuir">Disminuir (−)</option></select></label>
-          <label class="field"><span>Porcentaje (%)</span><input class="input" id="cfg-pct" type="number" min="1" max="90" value="10"></label>
-          <label class="field" style="grid-column:1/3"><span>Aplicar a</span><select class="input" id="cfg-cat"><option>Todas</option>${CATEGORIAS.filter(x=>x!=='Fletes').map(x=>`<option>${x}</option>`).join('')}</select></label>
+        <div class="section-title">Información de la ferretería</div>
+        <div class="section-sub">Se muestra en el menú, el login y los documentos generados.</div>
+        <div class="stack" style="gap:12px">
+          <label class="field"><span>Nombre comercial</span><input class="input" id="cfg-nombre" value="${esc(state.config.businessName)}"></label>
+          <div class="grid g2" style="gap:12px">
+            <div class="field"><span>RIF</span>
+              <div class="row" style="gap:8px">
+                <select class="input" id="cfg-rif-tipo" style="max-width:70px">${DOC_TIPOS.map(t=>`<option ${state.config.rifTipo===t?'selected':''}>${t}</option>`).join('')}</select>
+                <input class="input" id="cfg-rif-num" value="${esc(state.config.rifNumero)}">
+              </div>
+            </div>
+            <label class="field"><span>Teléfono</span><input class="input" id="cfg-tel" value="${esc(state.config.businessPhone)}"></label>
+          </div>
+          <label class="field"><span>Dirección</span><input class="input" id="cfg-dir" value="${esc(state.config.businessAddress)}"></label>
+          <label class="field"><span>Correo</span><input class="input" id="cfg-email" value="${esc(state.config.businessEmail)}"></label>
         </div>
-        <button class="btn btn-accent" id="cfg-ajuste" style="width:100%;margin-top:14px">Aplicar ajuste</button>
+        <button class="btn btn-primary" id="cfg-info-btn" style="margin-top:14px">Guardar</button>
+      </div>
+    </div>
+    <div class="card" style="padding:20px">
+      <div class="row" style="align-items:center;gap:14px;margin-bottom:16px">
+        <img src="static/images/gdb_logo.png" alt="Digital Gdb S.A" style="width:52px;height:52px;object-fit:contain;border-radius:10px">
+        <div>
+          <div class="section-title">Contacto con Digital Gdb S.A</div>
+          <div class="section-sub" style="margin:0">Soporte técnico y desarrollo del sistema.</div>
+        </div>
+      </div>
+      <div class="row" style="flex-wrap:wrap;gap:24px">
+        <a class="vendor-contact-row" href="mailto:digitalgdbsa@gmail.com" style="flex:1 1 260px">
+          <span class="vendor-contact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a2 2 0 0 1-2.06 0L2 7"/></svg></span>
+          <span>digitalgdbsa@gmail.com</span>
+        </a>
+        <a class="vendor-contact-row" href="https://wa.me/584125237035" target="_blank" rel="noopener" style="flex:1 1 260px">
+          <span class="vendor-contact-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.97-.93-.26-.1-.46-.15-.65.14-.2.3-.75.94-.92 1.13-.17.2-.34.22-.63.08-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.3-.02-.46.13-.6.13-.13.29-.35.44-.52.15-.17.2-.3.29-.5.1-.2.05-.37-.02-.51-.08-.15-.65-1.58-.9-2.16-.24-.58-.48-.5-.65-.5-.17-.01-.37-.01-.56-.01s-.51.08-.78.37c-.26.3-1.02 1-1.02 2.43s1.05 2.83 1.19 3.02c.15.2 2.06 3.15 5 4.42.7.3 1.24.48 1.67.61.7.22 1.34.19 1.84.12.56-.08 1.7-.7 1.95-1.37.24-.68.24-1.25.17-1.37-.07-.12-.26-.2-.55-.34z"/><path d="M12 2a10 10 0 0 0-8.55 15.15L2 22l4.97-1.4A10 10 0 1 0 12 2z"/></svg></span>
+          <span>+58 412-5237035</span>
+        </a>
       </div>
     </div>
   </div>`;
-  $('#cfg-tasa-btn').onclick=()=>{
-    const val=Number($('#cfg-tasa').value);
-    if(!(val>0)){ $('#cfg-err').innerHTML='<div class="err">La tasa debe ser un número mayor a 0.</div>'; return; }
-    $('#cfg-err').innerHTML='';
-    const anterior=state.config.tasaBCV;
-    state.config.tasaBCV=val;
-    const rv=document.querySelector('.rate .val');if(rv)rv.innerHTML=`${fmtBs(state.config.tasaBCV)}<span class="muted" style="font-weight:400;font-size:12px"> / $</span>`;
-    logActividad('Actualizó tasa BCV',fmtBs(anterior)+' → '+fmtBs(val));
-    showToast('Tasa BCV actualizada correctamente.');
-  };
-  $('#cfg-ajuste').onclick=()=>{
-    const tipo=$('#cfg-tipo').value, pct=Number($('#cfg-pct').value), cat=$('#cfg-cat').value;
-    if(!(pct>0&&pct<=90)){ $('#cfg-err').innerHTML='<div class="err">El porcentaje debe estar entre 1 y 90.</div>'; return; }
-    $('#cfg-err').innerHTML='';
-    const factor=tipo==='aumentar'?(1+pct/100):(1-pct/100);
-    const afectados=state.productos.filter(p=>p.tipo!=='flete'&&(cat==='Todas'||p.categoria===cat));
-    if(!afectados.length){ showToast('No hay productos que coincidan con esa categoría.','error'); return; }
-    confirmModal({title:'Aplicar ajuste de precios',message:`Se ${tipo==='aumentar'?'aumentarán':'reducirán'} los precios (efectivo y Bs BCV) en ${pct}% a ${afectados.length} producto(s) de "${cat}". Esta acción no se puede deshacer.`,confirmLabel:'Aplicar ajuste',onConfirm:()=>{
-      afectados.forEach(p=>{ p.precioUSD=Math.round(p.precioUSD*factor*100)/100; p.precioBCV=Math.round(p.precioBCV*factor*100)/100; });
-      logActividad('Aplicó ajuste masivo de precios',tipo+' '+pct+'% · '+cat+' · '+afectados.length+' producto(s)');
-      showToast(`Precios actualizados (${tipo} ${pct}%) en ${afectados.length} producto(s).`);
-    }});
+  if(!hoyTasa){
+    $('#cfg-tasa-btn').onclick=()=>{
+      const val=Number($('#cfg-tasa').value);
+      if(!(val>0)){ $('#cfg-err').innerHTML='<div class="err">La tasa debe ser un número mayor a 0.</div>'; return; }
+      const eff=fechaEfectivaBCV();
+      if(state.tasas.find(t=>t.fecha===eff)){ $('#cfg-err').innerHTML='<div class="err">Ya hay una tasa registrada para hoy.</div>'; return; }
+      $('#cfg-err').innerHTML='';
+      state.tasas.push({fecha:eff,tasa:val,origen:'MANUAL'});
+      const anterior=state.config.tasaBCV;
+      state.config.tasaBCV=val;
+      logActividad('Actualizó tasa BCV',fmtBs(anterior)+' → '+fmtBs(val)+' (manual)');
+      showToast('Tasa BCV actualizada correctamente.');
+      renderShell();
+    };
+    $('#cfg-tasa-refresh').onclick=actualizarTasaBCV;
+  }
+  $('#cfg-info-btn').onclick=()=>{
+    state.config.businessName=$('#cfg-nombre').value.trim()||state.config.businessName;
+    state.config.rifTipo=$('#cfg-rif-tipo').value;
+    state.config.rifNumero=$('#cfg-rif-num').value.trim();
+    state.config.businessPhone=$('#cfg-tel').value.trim();
+    state.config.businessAddress=$('#cfg-dir').value.trim();
+    state.config.businessEmail=$('#cfg-email').value.trim();
+    logActividad('Actualizó datos de la ferretería','');
+    showToast('Datos de la ferretería actualizados correctamente.');
+    renderShell();
   };
 }
 
@@ -1551,7 +2040,6 @@ function openModal(title,bodyHTML,onSave){
       </div>
     </div>
   </div>`;
-  $('#modal-bg').onclick=e=>{if(e.target.id==='modal-bg')closeModal();};
   $('#modal-x').onclick=closeModal; $('#modal-cancel').onclick=closeModal;
   $('#modal-save').onclick=()=>{onSave();};
 }
@@ -1580,14 +2068,12 @@ function confirmModal(opts){
   $('#confirm-root').innerHTML=`
   <div class="modal-bg" id="cf-bg">
     <div class="confirm-modal">
-      <div class="ic-warn">${ICON.trash}</div>
       <h3>${esc(title)}</h3>
       <p>${esc(message)}</p>
       <div class="foot"><button class="btn btn-ghost" id="cf-cancel">Cancelar</button><button class="btn btn-danger" id="cf-ok">${esc(confirmLabel)}</button></div>
     </div>
   </div>`;
   const close=()=>{ $('#confirm-root').innerHTML=''; };
-  $('#cf-bg').onclick=e=>{if(e.target.id==='cf-bg')close();};
   $('#cf-cancel').onclick=close;
   $('#cf-ok').onclick=()=>{ close(); onConfirm(); };
 }
@@ -1602,6 +2088,29 @@ function currentUserNombre(){
 function logActividad(accion,detalle){
   state.actividad.push({id:uid(),ts:Date.now(),usuarioId:state.currentUserId,usuario:currentUserNombre(),accion,detalle:detalle||''});
 }
+
+/* ================================================================ */
+/*  Mecánica global: cerrar dropdown de usuario al hacer click fuera, */
+/*  y sanitizar inputs marcados data-numeric="int"|"decimal"        */
+/* ================================================================ */
+document.addEventListener('click',e=>{
+  const menu=$('#user-menu');
+  if(menu && !menu.contains(e.target)) menu.classList.remove('open');
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(!el.matches || !el.matches('[data-numeric]')) return;
+  const val=el.value;
+  let cleaned;
+  if(el.dataset.numeric==='decimal'){
+    cleaned=val.replace(/[^0-9.]/g,'');
+    const parts=cleaned.split('.');
+    if(parts.length>2) cleaned=parts[0]+'.'+parts.slice(1).join('');
+  }else{
+    cleaned=val.replace(/[^0-9]/g,'');
+  }
+  if(cleaned!==val) el.value=cleaned;
+});
 
 /* ================================================================ */
 /*  Init                                                            */
